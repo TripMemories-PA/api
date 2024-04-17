@@ -1,7 +1,8 @@
 import User from '#models/user'
+import { RegisterRequest } from '../types/register_request.js'
 
 export default class AuthService {
-  register(payload: { email: string; password: string }) {
+  register(payload: RegisterRequest) {
     return User.create(payload)
   }
 }
