@@ -1,7 +1,9 @@
 import AuthService from '#services/auth_service'
+import { loginValidator } from '#validators/auth/login_validator'
 import { registerValidator } from '#validators/auth/register_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
+import exp from 'node:constants'
 
 @inject()
 export default class AuthController {
@@ -13,5 +15,19 @@ export default class AuthController {
     const user = await this.authService.register(payload)
 
     return response.created(user)
+  }
+
+  async login({ request, response }: HttpContext) {
+    const payload = await request.validateUsing(loginValidator)
+
+    const token = await this.authService.login(payload)
+
+    console.log(token)
+
+    return response.ok({
+      type: 'bearer',
+      token: token.value?.release(),
+      expires_at: token.expiresAt,
+    })
   }
 }

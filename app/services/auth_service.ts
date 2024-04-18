@@ -1,4 +1,5 @@
 import User from '#models/user'
+import { LoginRequest } from '../types/login_request.js'
 import { RegisterRequest } from '../types/register_request.js'
 
 export default class AuthService {
@@ -8,5 +9,11 @@ export default class AuthService {
       email: payload.email,
       password: payload.password,
     })
+  }
+
+  async login(payload: LoginRequest) {
+    const user = await User.verifyCredentials(payload.login, payload.password)
+
+    return User.accessTokens.create(user, ['*'], { expiresIn: '1 hour' })
   }
 }
