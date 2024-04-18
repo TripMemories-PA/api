@@ -14,6 +14,6 @@ export default class AuthService {
   async login(payload: LoginRequest) {
     const user = await User.verifyCredentials(payload.login, payload.password)
 
-    return User.accessTokens.create(user, ['*'], { expiresIn: '1 hour' })
+    return await User.accessTokens.create(user, ['*'], { expiresIn: '1 hour' })
   }
 }

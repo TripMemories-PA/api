@@ -22,8 +22,6 @@ export default class AuthController {
 
     const token = await this.authService.login(payload)
 
-    console.log(token)
-
     return response.ok({
       type: 'bearer',
       token: token.value?.release(),
