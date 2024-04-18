@@ -20,7 +20,7 @@ export const registerValidator = vine.compile(
       }),
     password: vine
       .string()
-      .minLength(3)
+      .minLength(8)
       .maxLength(32)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
       .confirmed(),

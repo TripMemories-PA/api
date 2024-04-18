@@ -3,6 +3,10 @@ import { RegisterRequest } from '../types/register_request.js'
 
 export default class AuthService {
   register(payload: RegisterRequest) {
-    return User.create(payload)
+    return User.create({
+      username: payload.username,
+      email: payload.email,
+      password: payload.password,
+    })
   }
 }
