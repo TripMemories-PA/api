@@ -3,7 +3,6 @@ import { loginValidator } from '#validators/auth/login_validator'
 import { registerValidator } from '#validators/auth/register_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import exp from 'node:constants'
 
 @inject()
 export default class AuthController {
