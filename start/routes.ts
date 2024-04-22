@@ -27,6 +27,7 @@ router
 
 router
   .group(() => {
-    router.get('/me', [MeController, 'me'])
+    router.get('/me', [MeController, 'show'])
+    router.put('/me', [MeController, 'update'])
   })
   .middleware(middleware.auth())

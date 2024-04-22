@@ -1,6 +1,6 @@
 import User from '#models/user'
-import { LoginRequest } from '../types/login_request.js'
-import { RegisterRequest } from '../types/register_request.js'
+import { LoginRequest } from '../types/requests/auth/login_request.js'
+import { RegisterRequest } from '../types/requests/auth/register_request.js'
 
 export default class AuthService {
   register(payload: RegisterRequest) {
