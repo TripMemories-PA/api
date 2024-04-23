@@ -9,6 +9,7 @@
 
 const AuthController = () => import('#controllers/auth_controller')
 const MeController = () => import('#controllers/me_controller')
+const FileController = () => import('#controllers/file_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
@@ -31,3 +32,10 @@ router
     router.put('/me', [MeController, 'update'])
   })
   .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.post('', [FileController, 'store'])
+  })
+  .middleware(middleware.auth())
+  .prefix('files')
