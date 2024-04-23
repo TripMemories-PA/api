@@ -11,7 +11,7 @@ export default class MeController {
   async show({ response, auth }: HttpContext) {
     const user = await this.meService.get(auth.user!)
 
-    return response.ok(auth.user)
+    return response.ok(user)
   }
 
   async update({ request, response, auth }: HttpContext) {

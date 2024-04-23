@@ -1,6 +1,6 @@
 import UploadFile from '#models/upload_file'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
-import { put } from '@vercel/blob'
+import { del, put } from '@vercel/blob'
 import fs from 'node:fs'
 
 export default class FileService {
@@ -18,5 +18,11 @@ export default class FileService {
     })
 
     return fileModel
+  }
+
+  async delete(file: UploadFile) {
+    await del(file.url)
+
+    await file.delete()
   }
 }

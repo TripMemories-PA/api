@@ -9,7 +9,9 @@ export default class MeService {
   constructor(protected fileService: FileService) {}
 
   async get(user: User) {
-    return await user.load('avatar')
+    await user.load('avatar')
+
+    return user
   }
 
   async update(user: User, payload: UpdateMeRequest) {
@@ -26,9 +28,19 @@ export default class MeService {
   }
 
   async storeAvatar(user: User, file: MultipartFile) {
-    const uploadedFile = await this.fileService.store(file)
+    await user.load('avatar')
 
+    let oldAvatar = null
+    if (user.avatar) {
+      oldAvatar = user.avatar
+    }
+
+    const uploadedFile = await this.fileService.store(file)
     await user.related('avatar').associate(uploadedFile)
+
+    if (oldAvatar) {
+      await this.fileService.delete(oldAvatar)
+    }
 
     return uploadedFile
   }
