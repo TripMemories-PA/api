@@ -1,10 +1,10 @@
 import vine from '@vinejs/vine'
 
-export const storeFileValidator = vine.compile(
+export const storeAvatarValidator = vine.compile(
   vine.object({
     file: vine.file({
       size: '4mb',
-      extnames: ['jpg', 'jpeg', 'png', 'pdf'],
+      extnames: ['jpg', 'jpeg', 'png'],
     }),
   })
 )

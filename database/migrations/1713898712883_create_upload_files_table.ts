@@ -1,7 +1,7 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'files'
+  protected tableName = 'upload_files'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -12,6 +12,10 @@ export default class extends BaseSchema {
 
       table.timestamp('created_at')
       table.timestamp('updated_at')
+    })
+
+    this.schema.alterTable('users', (table) => {
+      table.integer('avatar_id').unsigned().references('upload_files.id').nullable()
     })
   }
 

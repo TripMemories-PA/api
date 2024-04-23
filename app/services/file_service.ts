@@ -1,4 +1,4 @@
-import File from '#models/file'
+import UploadFile from '#models/upload_file'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { put } from '@vercel/blob'
 import fs from 'node:fs'
@@ -11,7 +11,7 @@ export default class FileService {
       access: 'public',
     })
 
-    const fileModel = await File.create({
+    const fileModel = await UploadFile.create({
       filename: file.clientName,
       url: blob.url,
       mimeType: file.type + '/' + file.subtype,
