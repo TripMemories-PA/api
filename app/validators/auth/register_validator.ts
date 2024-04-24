@@ -7,15 +7,15 @@ export const registerValidator = vine.compile(
       .minLength(3)
       .maxLength(32)
       .regex(/^\w+$/)
-      .unique(async (query, field) => {
-        const user = await query.from('users').where('username', field).first()
+      .unique(async (db, value) => {
+        const user = await db.from('users').where('username', value).first()
         return !user
       }),
     email: vine
       .string()
       .email()
-      .unique(async (query, field) => {
-        const user = await query.from('users').where('email', field).first()
+      .unique(async (db, value) => {
+        const user = await db.from('users').where('email', value).first()
         return !user
       }),
     password: vine
