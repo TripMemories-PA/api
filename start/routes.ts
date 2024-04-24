@@ -29,5 +29,6 @@ router
   .group(() => {
     router.get('/me', [MeController, 'show'])
     router.put('/me', [MeController, 'update'])
+    router.post('/me/avatar', [MeController, 'storeAvatar'])
   })
   .middleware(middleware.auth())
