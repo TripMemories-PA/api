@@ -16,4 +16,16 @@ export default class FriendRequestController {
 
     return response.created(friendRequest)
   }
+
+  async delete({ response, auth, params }: HttpContext) {
+    await this.friendRequestService.delete(auth.user!, params.id)
+
+    return response.noContent()
+  }
+
+  async accept({ response, auth, params }: HttpContext) {
+    await this.friendRequestService.accept(auth.user!, params.id)
+
+    return response.noContent()
+  }
 }
