@@ -1,26 +1,12 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import {
-  BaseModel,
-  belongsTo,
-  column,
-  hasMany,
-  hasManyThrough,
-  manyToMany,
-} from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import UploadFile from './upload_file.js'
-import type {
-  BelongsTo,
-  HasMany,
-  HasManyThrough,
-  ManyToMany,
-} from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import FriendRequest from './friend_request.js'
-import Friend from './friend.js'
-
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
   passwordColumnName: 'password',

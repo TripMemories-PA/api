@@ -17,6 +17,9 @@ export const createFriendRequestValidator = vine.withMetaData<AuthMetadata>().co
         .whereDoesntHave('receivedFriendRequests', (query) => {
           query.where('sender_id', field.meta.userId)
         })
+        .whereDoesntHave('friends', (query) => {
+          query.where('friend_id', field.meta.userId)
+        })
         .first()
 
       return !!user
