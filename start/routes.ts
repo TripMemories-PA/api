@@ -38,6 +38,8 @@ router
 router
   .group(() => {
     router.post('', [FriendRequestController, 'store'])
+    router.delete('/:id', [FriendRequestController, 'delete'])
+    router.put('/:id/accept', [FriendRequestController, 'accept'])
   })
   .prefix('friend-requests')
   .middleware(middleware.auth())

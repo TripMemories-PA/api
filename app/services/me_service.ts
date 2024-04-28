@@ -13,6 +13,7 @@ export default class MeService {
       loader.load('avatar')
       loader.load('sentFriendRequests')
       loader.load('receivedFriendRequests')
+      loader.load('friends')
     })
 
     return user
