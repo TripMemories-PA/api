@@ -11,9 +11,6 @@ export default class MeService {
   async get(user: User) {
     await user.load((loader) => {
       loader.load('avatar')
-      loader.load('sentFriendRequests')
-      loader.load('receivedFriendRequests')
-      loader.load('friends')
     })
 
     return user
