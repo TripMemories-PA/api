@@ -13,7 +13,7 @@ export default class AuthController {
 
     const user = await this.authService.register(payload)
 
-    return response.created(user)
+    return response.created(user.toJSON())
   }
 
   async login({ request, response }: HttpContext) {

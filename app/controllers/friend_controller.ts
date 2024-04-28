@@ -1,4 +1,6 @@
+import User from '#models/user'
 import FriendService from '#services/friend_service'
+import { indexFriendValidator } from '#validators/friend/index_friend_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -10,5 +12,17 @@ export default class FriendController {
     await this.friendService.delete(auth.user!, params.id)
 
     return response.noContent()
+  }
+
+  async index({ response, auth, request }: HttpContext) {
+    const payload = await request.validateUsing(indexFriendValidator)
+
+    const friends: any = await this.friendService.index(auth.user!, payload)
+
+    if (payload.page) {
+      return response.ok(friends.toJSON())
+    } else {
+      return response.ok(friends.map((friend: User) => friend.toJSON()))
+    }
   }
 }

@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import User from './user.js'
 
 export default class FriendRequest extends BaseModel {
   @column({ isPrimary: true })
@@ -7,6 +9,11 @@ export default class FriendRequest extends BaseModel {
 
   @column()
   declare senderId: number
+
+  @belongsTo(() => User, {
+    foreignKey: 'senderId',
+  })
+  declare sender: BelongsTo<typeof User>
 
   @column()
   declare receiverId: number

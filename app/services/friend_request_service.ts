@@ -1,5 +1,6 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
+import { PaginateRequest } from '../types/requests/paginate_request.js'
 
 @inject()
 export default class FriendRequestService {
@@ -32,5 +33,20 @@ export default class FriendRequestService {
     await sender.related('friends').attach([user.id])
 
     await request.delete()
+  }
+
+  async index(user: User, request: PaginateRequest) {
+    const query = user
+      .related('receivedFriendRequests')
+      .query()
+      .preload('sender', (senders) => {
+        senders.preload('avatar')
+      })
+
+    if (request.page) {
+      return await query.paginate(request.page, request.perPage)
+    } else {
+      return await query
+    }
   }
 }

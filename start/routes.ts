@@ -35,6 +35,7 @@ router
 
     router
       .group(() => {
+        router.get('', [FriendRequestController, 'index'])
         router.post('', [FriendRequestController, 'store'])
         router.delete('/:id', [FriendRequestController, 'delete'])
         router.put('/:id/accept', [FriendRequestController, 'accept'])
@@ -43,6 +44,7 @@ router
 
     router
       .group(() => {
+        router.get('', [FriendController, 'index'])
         router.delete('/:id', [FriendController, 'delete'])
       })
       .prefix('/friends')
