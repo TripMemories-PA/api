@@ -11,6 +11,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const MeController = () => import('#controllers/me_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const FriendRequestController = () => import('#controllers/friend_request_controller')
 
 router.get('/', async () => {
   return {
@@ -27,8 +28,16 @@ router
 
 router
   .group(() => {
-    router.get('/me', [MeController, 'show'])
-    router.put('/me', [MeController, 'update'])
-    router.post('/me/avatar', [MeController, 'storeAvatar'])
+    router.get('', [MeController, 'show'])
+    router.put('', [MeController, 'update'])
+    router.post('/avatar', [MeController, 'storeAvatar'])
   })
+  .prefix('me')
+  .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.post('', [FriendRequestController, 'store'])
+  })
+  .prefix('friend-requests')
   .middleware(middleware.auth())

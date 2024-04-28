@@ -9,7 +9,11 @@ export default class MeService {
   constructor(protected fileService: FileService) {}
 
   async get(user: User) {
-    await user.load('avatar')
+    await user.load((loader) => {
+      loader.load('avatar')
+      loader.load('sentFriendRequests')
+      loader.load('receivedFriendRequests')
+    })
 
     return user
   }

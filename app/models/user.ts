@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import UploadFile from './upload_file.js'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import FriendRequest from './friend_request.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -38,6 +39,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'avatarId',
   })
   declare avatar: BelongsTo<typeof UploadFile>
+
+  @hasMany(() => FriendRequest, {
+    foreignKey: 'senderId',
+  })
+  declare sentFriendRequests: HasMany<typeof FriendRequest>
+
+  @hasMany(() => FriendRequest, {
+    foreignKey: 'receiverId',
+  })
+  declare receivedFriendRequests: HasMany<typeof FriendRequest>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
