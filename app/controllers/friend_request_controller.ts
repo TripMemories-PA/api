@@ -14,7 +14,7 @@ export default class FriendRequestController {
       meta: { userId: auth.user!.id },
     })
 
-    const friendRequest = await this.friendRequestService.store(auth.user!, payload.user_id)
+    const friendRequest = await this.friendRequestService.store(auth.user!, payload.userId)
 
     return response.created(friendRequest.toJSON())
   }
