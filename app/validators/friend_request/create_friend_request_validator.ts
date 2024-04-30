@@ -4,7 +4,7 @@ import User from '#models/user'
 
 export const createFriendRequestValidator = vine.withMetaData<AuthMetadata>().compile(
   vine.object({
-    user_id: vine.number().exists(async (_, value, field) => {
+    userId: vine.number().exists(async (_, value, field) => {
       if (value === field.meta.userId) {
         return false
       }

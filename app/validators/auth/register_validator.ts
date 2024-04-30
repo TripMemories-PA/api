@@ -22,7 +22,6 @@ export const registerValidator = vine.compile(
       .string()
       .minLength(8)
       .maxLength(32)
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/)
-      .confirmed(),
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z\d]).+$/),
   })
 )
