@@ -11,6 +11,7 @@ export default class MeService {
   async get(user: User) {
     await user.load((loader) => {
       loader.load('avatar')
+      loader.load('banner')
     })
 
     return user
@@ -32,17 +33,25 @@ export default class MeService {
   async storeAvatar(user: User, file: MultipartFile) {
     await user.load('avatar')
 
-    let oldAvatar = null
     if (user.avatar) {
-      oldAvatar = user.avatar
+      await this.fileService.delete(user.avatar)
     }
 
     const uploadedFile = await this.fileService.store(file)
     await user.related('avatar').associate(uploadedFile)
 
-    if (oldAvatar) {
-      await this.fileService.delete(oldAvatar)
+    return uploadedFile
+  }
+
+  async storeBanner(user: User, file: MultipartFile) {
+    await user.load('banner')
+
+    if (user.banner) {
+      await this.fileService.delete(user.banner)
     }
+
+    const uploadedFile = await this.fileService.store(file)
+    await user.related('banner').associate(uploadedFile)
 
     return uploadedFile
   }

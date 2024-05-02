@@ -1,5 +1,6 @@
 import MeService from '#services/me_service'
 import { storeAvatarValidator } from '#validators/me/store_avatar_validator'
+import { storeBannerValidator } from '#validators/me/store_banner_validator'
 import { updateMeValidator } from '#validators/me/update_me_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
@@ -28,6 +29,14 @@ export default class MeController {
     const { file } = await request.validateUsing(storeAvatarValidator)
 
     const uploadedFile = await this.meService.storeAvatar(auth.user!, file)
+
+    return response.created(uploadedFile.toJSON())
+  }
+
+  async storeBanner({ request, response, auth }: HttpContext) {
+    const { file } = await request.validateUsing(storeBannerValidator)
+
+    const uploadedFile = await this.meService.storeBanner(auth.user!, file)
 
     return response.created(uploadedFile.toJSON())
   }

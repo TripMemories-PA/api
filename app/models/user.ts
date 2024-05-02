@@ -39,6 +39,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
   })
   declare avatar: BelongsTo<typeof UploadFile>
 
+  @column({ serializeAs: null })
+  declare bannerId: number
+
+  @belongsTo(() => UploadFile, {
+    foreignKey: 'bannerId',
+  })
+  declare banner: BelongsTo<typeof UploadFile>
+
   @hasMany(() => FriendRequest, {
     foreignKey: 'senderId',
   })
