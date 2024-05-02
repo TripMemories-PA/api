@@ -6,11 +6,11 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
-
-const AuthController = () => import('#controllers/auth_controller')
-const MeController = () => import('#controllers/me_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const AuthController = () => import('#controllers/auth_controller')
+const MeController = () => import('#controllers/me_controller')
+const UserController = () => import('#controllers/user_controller')
 const FriendController = () => import('#controllers/friend_controller')
 const FriendRequestController = () => import('#controllers/friend_request_controller')
 
@@ -50,4 +50,11 @@ router
       .prefix('/friends')
   })
   .prefix('me')
+  .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.get('', [UserController, 'index'])
+  })
+  .prefix('users')
   .middleware(middleware.auth())

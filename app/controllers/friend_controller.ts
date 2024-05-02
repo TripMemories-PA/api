@@ -17,7 +17,7 @@ export default class FriendController {
   async index({ response, auth, request }: HttpContext) {
     const payload = await request.validateUsing(indexFriendValidator)
 
-    const friends: any = await this.friendService.index(auth.user!, payload)
+    const friends = await this.friendService.index(auth.user!, payload)
 
     return response.ok(friends.toJSON())
   }
