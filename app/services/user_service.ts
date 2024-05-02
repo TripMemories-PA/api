@@ -14,7 +14,10 @@ export default class UserService {
       })
     }
 
-    return await query.whereNot('id', user.id).paginate(request.page, request.perPage)
+    return await query
+      .whereNot('id', user.id)
+      .preload('avatar')
+      .paginate(request.page, request.perPage)
   }
 
   async show(id: number) {
