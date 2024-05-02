@@ -1,7 +1,6 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
-import FriendRequest from '#models/friend_request'
 
 @inject()
 export default class FriendRequestService {
@@ -12,8 +11,7 @@ export default class FriendRequestService {
   }
 
   async delete(user: User, requestId: number) {
-    const request = await user
-      .related('sentFriendRequests')
+    const request = await user.related('sentFriendRequests')
       .query()
       .where('id', requestId)
       .firstOrFail()
