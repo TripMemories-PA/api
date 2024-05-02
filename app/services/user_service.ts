@@ -23,7 +23,10 @@ export default class UserService {
   async show(id: number) {
     const user = await User.findOrFail(id)
 
-    await user.load('avatar')
+    await user.load((loader) => {
+      loader.load('avatar')
+      loader.load('banner')
+    })
 
     return user
   }

@@ -15,7 +15,19 @@ export default class extends BaseSchema {
     })
 
     this.schema.alterTable('users', (table) => {
-      table.integer('avatar_id').unsigned().references('upload_files.id').nullable()
+      table
+        .integer('avatar_id')
+        .unsigned()
+        .references('upload_files.id')
+        .nullable()
+        .onDelete('SET NULL')
+
+      table
+        .integer('banner_id')
+        .unsigned()
+        .references('upload_files.id')
+        .nullable()
+        .onDelete('SET NULL')
     })
   }
 

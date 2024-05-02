@@ -32,6 +32,7 @@ router
     router.get('', [MeController, 'show'])
     router.put('', [MeController, 'update'])
     router.post('/avatar', [MeController, 'storeAvatar'])
+    router.post('/banner', [MeController, 'storeBanner'])
 
     router
       .group(() => {
