@@ -55,6 +55,7 @@ router
 router
   .group(() => {
     router.get('', [UserController, 'index'])
+    router.get('/:id', [UserController, 'show'])
   })
   .prefix('users')
   .middleware(middleware.auth())

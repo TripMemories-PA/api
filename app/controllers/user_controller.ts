@@ -16,4 +16,10 @@ export default class UserController {
 
     return response.ok(users.toJSON())
   }
+
+  async show({ response, params }: HttpContext) {
+    const user = await this.userService.show(params.id)
+
+    return response.ok(user.toJSON())
+  }
 }
