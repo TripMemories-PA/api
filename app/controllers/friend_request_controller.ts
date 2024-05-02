@@ -1,4 +1,3 @@
-import FriendRequest from '#models/friend_request'
 import FriendRequestService from '#services/friend_request_service'
 import { createFriendRequestValidator } from '#validators/friend_request/create_friend_request_validator'
 import { indexFriendRequestValidator } from '#validators/friend_request/index_friend_request_validator'
