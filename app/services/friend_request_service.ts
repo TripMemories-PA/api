@@ -11,7 +11,8 @@ export default class FriendRequestService {
   }
 
   async delete(user: User, requestId: number) {
-    const request = await user.related('sentFriendRequests')
+    const request = await user
+      .related('sentFriendRequests')
       .query()
       .where('id', requestId)
       .firstOrFail()
