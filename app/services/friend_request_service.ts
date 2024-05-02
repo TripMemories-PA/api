@@ -1,6 +1,7 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
+import FriendRequest from '#models/friend_request'
 
 @inject()
 export default class FriendRequestService {
