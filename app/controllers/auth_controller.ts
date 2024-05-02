@@ -24,7 +24,7 @@ export default class AuthController {
     return response.ok({
       type: 'bearer',
       token: token.value?.release(),
-      expires_at: token.expiresAt,
+      expiresAt: token.expiresAt,
     })
   }
 }

@@ -14,10 +14,6 @@ export default class FriendService {
   async index(user: User, request: PaginateRequest) {
     const query = user.related('friends').query().preload('avatar')
 
-    if (request.page) {
-      return await query.paginate(request.page, request.perPage)
-    } else {
-      return await query
-    }
+    return await query.paginate(request.page, request.perPage)
   }
 }

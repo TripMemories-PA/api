@@ -36,12 +36,6 @@ export default class FriendRequestController {
 
     const friendRequests: any = await this.friendRequestService.index(auth.user!, payload)
 
-    if (payload.page) {
-      return response.ok(friendRequests.toJSON())
-    } else {
-      return response.ok(
-        friendRequests.map((friendRequest: FriendRequest) => friendRequest.toJSON())
-      )
-    }
+    return response.ok(friendRequests.toJSON())
   }
 }

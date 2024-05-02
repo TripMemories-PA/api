@@ -24,7 +24,7 @@ export const updateMeValidator = vine.withMetaData<AuthMetadata>().compile(
         .first()
       return !user
     }),
-    firstname: vine.string().nullable(),
-    lastname: vine.string().nullable(),
+    firstname: vine.string().minLength(3).maxLength(32),
+    lastname: vine.string().minLength(3).maxLength(32),
   })
 )
