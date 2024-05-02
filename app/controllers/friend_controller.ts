@@ -1,4 +1,3 @@
-import User from '#models/user'
 import FriendService from '#services/friend_service'
 import { indexFriendValidator } from '#validators/friend/index_friend_validator'
 import { inject } from '@adonisjs/core'
