@@ -8,6 +8,8 @@ export default class AuthService {
       username: payload.username,
       email: payload.email,
       password: payload.password,
+      firstname: payload.firstname,
+      lastname: payload.lastname,
     })
   }
 
