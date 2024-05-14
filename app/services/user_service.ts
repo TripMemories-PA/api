@@ -1,4 +1,5 @@
 import User from '#models/user'
+import { PaginateRequest } from '../types/requests/paginate_request.js'
 import { IndexUserRequest } from '../types/requests/user/index_user_request.js'
 
 export default class UserService {
@@ -29,5 +30,13 @@ export default class UserService {
     })
 
     return user
+  }
+
+  async indexFriends(id: number, request: PaginateRequest) {
+    const user = await User.findOrFail(id)
+
+    const query = user.related('friends').query().preload('avatar')
+
+    return await query.paginate(request.page, request.perPage)
   }
 }

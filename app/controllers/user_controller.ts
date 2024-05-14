@@ -1,5 +1,3 @@
-// import type { HttpContext } from '@adonisjs/core/http'
-
 import UserService from '#services/user_service'
 import { indexUserValidator } from '#validators/user/index_user_validator'
 import { inject } from '@adonisjs/core'
@@ -21,5 +19,13 @@ export default class UserController {
     const user = await this.userService.show(params.id)
 
     return response.ok(user.toJSON())
+  }
+
+  async indexFriends({ response, request, params }: HttpContext) {
+    const payload = await request.validateUsing(indexUserValidator)
+
+    const friends = await this.userService.indexFriends(params.id, payload)
+
+    return response.ok(friends.toJSON())
   }
 }
