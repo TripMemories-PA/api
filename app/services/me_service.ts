@@ -55,4 +55,19 @@ export default class MeService {
 
     return uploadedFile
   }
+
+  async delete(user: User) {
+    await user.load('avatar')
+    await user.load('banner')
+
+    if (user.avatar) {
+      await this.fileService.delete(user.avatar)
+    }
+
+    if (user.banner) {
+      await this.fileService.delete(user.banner)
+    }
+
+    await user.delete()
+  }
 }

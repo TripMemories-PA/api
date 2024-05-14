@@ -12,7 +12,7 @@ export default class FriendRequestService {
 
   async delete(user: User, requestId: number) {
     const request = await user
-      .related('sentFriendRequests')
+      .related('receivedFriendRequests')
       .query()
       .where('id', requestId)
       .firstOrFail()

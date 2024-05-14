@@ -40,4 +40,10 @@ export default class MeController {
 
     return response.created(uploadedFile.toJSON())
   }
+
+  async delete({ response, auth }: HttpContext) {
+    await this.meService.delete(auth.user!)
+
+    return response.noContent()
+  }
 }
