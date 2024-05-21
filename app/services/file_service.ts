@@ -1,19 +1,42 @@
 import UploadFile from '#models/upload_file'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
-import { del, put } from '@vercel/blob'
 import fs from 'node:fs'
+import * as Minio from 'minio'
 
 export default class FileService {
-  async store(file: MultipartFile) {
-    const data = fs.readFileSync(file.tmpPath!)
-
-    const blob = await put(file.clientName, data, {
-      access: 'public',
+  private client: any
+  constructor() {
+    this.client = new Minio.Client({
+      endPoint: 'localhost',
+      port: 9000,
+      useSSL: false,
+      accessKey: process.env.MINIO_ACCESS_KEY!,
+      secretKey: process.env.MINIO_SECRET_KEY!,
     })
+  }
+
+  async store(file: MultipartFile) {
+    await this.client.fPutObject('somebucketname', file.clientName, file.tmpPath!, {
+      'Content-Type': file.type + '/' + file.subtype,
+    })
+
+    const url = await this.client.presignedGetObject(
+      'somebucketname',
+      file.clientName,
+      60 * 60 * 24
+    )
+    console.log(url)
+
+    const publicUrl = 'http://localhost:9000/somebucketname/' + file.clientName
+    console.log(publicUrl)
+
+    // const blob = await put(file.clientName, data, {
+    //   access: 'public',
+    // })
 
     const fileModel = await UploadFile.create({
       filename: file.clientName,
-      url: blob.url,
+      url: publicUrl,
       mimeType: file.type + '/' + file.subtype,
     })
 
@@ -21,8 +44,9 @@ export default class FileService {
   }
 
   async delete(file: UploadFile) {
-    await del(file.url)
+    console.log('deleted')
+    // await del(file.url)
 
-    await file.delete()
+    // await file.delete()
   }
 }
