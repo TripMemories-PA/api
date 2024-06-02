@@ -1,9 +1,19 @@
 import User from '#models/user'
-import { PaginateRequest } from '../types/requests/paginate_request.js'
+import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { IndexUserRequest } from '../types/requests/user/index_user_request.js'
+import { UpdateUserRequest } from '../types/requests/user/update_user_request.js'
+import AuthService from './auth_service.js'
+import FileService from './file_service.js'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class UserService {
-  async index(user: User, request: IndexUserRequest) {
+  constructor(
+    private authService: AuthService,
+    private fileService: FileService
+  ) {}
+
+  async index(request: IndexUserRequest) {
     const query = User.query()
 
     if (request.search) {
@@ -15,28 +25,79 @@ export default class UserService {
       })
     }
 
+    const authUser = this.authService.getAuthenticatedUser()
+
     return await query
-      .whereNot('id', user.id)
+      .whereNot('id', authUser.id)
       .preload('avatar')
+      .preload('banner')
+      .preload('friends')
       .paginate(request.page, request.perPage)
   }
 
   async show(id: number) {
-    const user = await User.findOrFail(id)
-
-    await user.load((loader) => {
-      loader.load('avatar')
-      loader.load('banner')
-    })
-
-    return user
+    return await User.query()
+      .where('id', id)
+      .preload('avatar')
+      .preload('banner')
+      .preload('friends')
+      .firstOrFail()
   }
 
-  async indexFriends(id: number, request: PaginateRequest) {
-    const user = await User.findOrFail(id)
+  async update(userId: number, payload: UpdateUserRequest) {
+    const user = await User.findOrFail(userId)
 
-    const query = user.related('friends').query().preload('avatar')
+    user.merge({
+      username: payload.username,
+      email: payload.email,
+      firstname: payload.firstname,
+      lastname: payload.lastname,
+    })
 
-    return await query.paginate(request.page, request.perPage)
+    return await user.save()
+  }
+
+  async storeAvatar(userId: number, file: MultipartFile) {
+    const user = await User.query().where('id', userId).preload('avatar').firstOrFail()
+
+    if (user.avatar) {
+      await this.fileService.delete(user.avatar)
+    }
+
+    const uploadedFile = await this.fileService.store(file)
+    await user.related('avatar').associate(uploadedFile)
+
+    return uploadedFile
+  }
+
+  async storeBanner(userId: number, file: MultipartFile) {
+    const user = await User.query().where('id', userId).preload('banner').firstOrFail()
+
+    if (user.banner) {
+      await this.fileService.delete(user.banner)
+    }
+
+    const uploadedFile = await this.fileService.store(file)
+    await user.related('banner').associate(uploadedFile)
+
+    return uploadedFile
+  }
+
+  async delete(userId: number) {
+    const user = await User.query()
+      .where('id', userId)
+      .preload('avatar')
+      .preload('banner')
+      .firstOrFail()
+
+    if (user.avatar) {
+      await this.fileService.delete(user.avatar)
+    }
+
+    if (user.banner) {
+      await this.fileService.delete(user.banner)
+    }
+
+    await user.delete()
   }
 }

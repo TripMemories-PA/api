@@ -8,15 +8,23 @@ export default class FriendController {
   constructor(protected friendService: FriendService) {}
 
   async delete({ response, auth, params }: HttpContext) {
-    await this.friendService.delete(auth.user!, params.id)
+    await this.friendService.delete(auth.user!.id, params.id)
 
     return response.noContent()
   }
 
-  async index({ response, auth, request }: HttpContext) {
+  async indexMyFriends({ response, auth, request }: HttpContext) {
     const payload = await request.validateUsing(indexFriendValidator)
 
-    const friends = await this.friendService.index(auth.user!, payload)
+    const friends = await this.friendService.index(auth.user!.id, payload)
+
+    return response.ok(friends.toJSON())
+  }
+
+  async indexFriends({ response, params, request }: HttpContext) {
+    const payload = await request.validateUsing(indexFriendValidator)
+
+    const friends = await this.friendService.index(params.id, payload)
 
     return response.ok(friends.toJSON())
   }

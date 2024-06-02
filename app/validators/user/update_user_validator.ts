@@ -1,7 +1,7 @@
 import vine from '@vinejs/vine'
 import { AuthMetadata } from '../../types/auth_metadata.js'
 
-export const updateMeValidator = vine.withMetaData<AuthMetadata>().compile(
+export const updateUserValidator = vine.withMetaData<AuthMetadata>().compile(
   vine.object({
     username: vine
       .string()
