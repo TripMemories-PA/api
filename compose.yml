@@ -5,36 +5,36 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     expose:
-      - "5432"
+      - ${DB_PORT}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
 
   minio:
     image: minio/minio:latest
     container_name: minio
     expose:
-      - "9000"
+      - ${MINIO_PORT}
       - "9001"
     ports:
-      - "9000:9000"
+      - "${MINIO_PORT}:${MINIO_PORT}"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
 
-  createbuckets:
+  createbucket:
     image: minio/mc
     depends_on:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 admin password;
-      /usr/bin/mc mb myminio/somebucketname;
-      /usr/bin/mc anonymous set public myminio/somebucketname;
+      /usr/bin/mc alias set myminio http://minio:${MINIO_PORT} root ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb myminio/${MINIO_BUCKET_NAME};
+      /usr/bin/mc anonymous set public myminio/${MINIO_BUCKET_NAME};
       exit 0;
       "

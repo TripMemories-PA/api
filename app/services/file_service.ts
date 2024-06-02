@@ -1,14 +1,24 @@
 import UploadFile from '#models/upload_file'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
-import fs from 'node:fs'
 import * as Minio from 'minio'
+import env from '#start/env'
 
 export default class FileService {
-  private client: any
+  private client: Minio.Client
+  private bucketName: string
+  private baseUrl: string
+
   constructor() {
+    this.bucketName = env.get('MINIO_BUCKET_NAME')!
+
+    const port = Number(env.get('MINIO_PORT'))
+    const hostname = env.get('HOST')
+
+    this.baseUrl = 'http://' + hostname + ':' + port + '/' + this.bucketName
+
     this.client = new Minio.Client({
-      endPoint: 'localhost',
-      port: 9000,
+      endPoint: hostname,
+      port: port,
       useSSL: false,
       accessKey: process.env.MINIO_ACCESS_KEY!,
       secretKey: process.env.MINIO_SECRET_KEY!,
@@ -16,27 +26,18 @@ export default class FileService {
   }
 
   async store(file: MultipartFile) {
-    await this.client.fPutObject('somebucketname', file.clientName, file.tmpPath!, {
+    const timestamp = new Date().getTime()
+    file.clientName = timestamp + '-' + file.clientName
+
+    await this.client.fPutObject(this.bucketName, file.clientName, file.tmpPath!, {
       'Content-Type': file.type + '/' + file.subtype,
     })
 
-    const url = await this.client.presignedGetObject(
-      'somebucketname',
-      file.clientName,
-      60 * 60 * 24
-    )
-    console.log(url)
-
-    const publicUrl = 'http://localhost:9000/somebucketname/' + file.clientName
-    console.log(publicUrl)
-
-    // const blob = await put(file.clientName, data, {
-    //   access: 'public',
-    // })
+    const url = this.baseUrl + '/' + file.clientName
 
     const fileModel = await UploadFile.create({
       filename: file.clientName,
-      url: publicUrl,
+      url: url,
       mimeType: file.type + '/' + file.subtype,
     })
 
@@ -44,9 +45,6 @@ export default class FileService {
   }
 
   async delete(file: UploadFile) {
-    console.log('deleted')
-    // await del(file.url)
-
-    // await file.delete()
+    await this.client.removeObject(this.bucketName, file.filename)
   }
 }
