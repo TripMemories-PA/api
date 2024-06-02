@@ -5,6 +5,7 @@
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {
+    "docker": "docker-compose up -d",
     "start": "node bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --watch",
@@ -59,6 +60,7 @@
     "@vercel/blob": "^0.23.2",
     "@vinejs/vine": "^2.0.0",
     "luxon": "^3.4.4",
+    "minio": "^8.0.0",
     "pg": "^8.11.5",
     "reflect-metadata": "^0.2.2"
   },
