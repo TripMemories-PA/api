@@ -9,10 +9,10 @@ export default class FileService {
   private baseUrl: string
 
   constructor() {
-    this.bucketName = env.get('MINIO_BUCKET_NAME')!
+    this.bucketName = env.get('MINIO_BUCKET_NAME')
 
-    const port = Number(env.get('MINIO_PORT'))
-    const hostname = env.get('HOST')
+    const port = env.get('MINIO_PORT')
+    const hostname = env.get('MINIO_HOST')
 
     this.baseUrl = 'http://' + hostname + ':' + port + '/' + this.bucketName
 
@@ -20,8 +20,8 @@ export default class FileService {
       endPoint: hostname,
       port: port,
       useSSL: false,
-      accessKey: process.env.MINIO_ACCESS_KEY!,
-      secretKey: process.env.MINIO_SECRET_KEY!,
+      accessKey: env.get('MINIO_ACCESS_KEY'),
+      secretKey: env.get('MINIO_SECRET_KEY'),
     })
   }
 
