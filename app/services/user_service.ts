@@ -27,21 +27,11 @@ export default class UserService {
 
     const authUser = this.authService.getAuthenticatedUser()
 
-    return await query
-      .whereNot('id', authUser.id)
-      .preload('avatar')
-      .preload('banner')
-      .preload('friends')
-      .paginate(request.page, request.perPage)
+    return await query.whereNot('id', authUser.id).paginate(request.page, request.perPage)
   }
 
   async show(id: number) {
-    return await User.query()
-      .where('id', id)
-      .preload('avatar')
-      .preload('banner')
-      .preload('friends')
-      .firstOrFail()
+    return await User.query().where('id', id).firstOrFail()
   }
 
   async update(userId: number, payload: UpdateUserRequest) {
@@ -58,7 +48,7 @@ export default class UserService {
   }
 
   async storeAvatar(userId: number, file: MultipartFile) {
-    const user = await User.query().where('id', userId).preload('avatar').firstOrFail()
+    const user = await User.query().where('id', userId).firstOrFail()
 
     if (user.avatar) {
       await this.fileService.delete(user.avatar)
@@ -71,7 +61,7 @@ export default class UserService {
   }
 
   async storeBanner(userId: number, file: MultipartFile) {
-    const user = await User.query().where('id', userId).preload('banner').firstOrFail()
+    const user = await User.query().where('id', userId).firstOrFail()
 
     if (user.banner) {
       await this.fileService.delete(user.banner)
@@ -84,11 +74,7 @@ export default class UserService {
   }
 
   async delete(userId: number) {
-    const user = await User.query()
-      .where('id', userId)
-      .preload('avatar')
-      .preload('banner')
-      .firstOrFail()
+    const user = await User.query().where('id', userId).firstOrFail()
 
     if (user.avatar) {
       await this.fileService.delete(user.avatar)

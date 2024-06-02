@@ -16,11 +16,6 @@ export default class FriendService {
   async index(userId: number, request: PaginateRequest) {
     const user = await User.findOrFail(userId)
 
-    return await user
-      .related('friends')
-      .query()
-      .preload('avatar')
-      .preload('banner')
-      .paginate(request.page, request.perPage)
+    return await user.related('friends').query().paginate(request.page, request.perPage)
   }
 }

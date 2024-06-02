@@ -45,10 +45,6 @@ export default class FriendRequestService {
     return await user
       .related('receivedFriendRequests')
       .query()
-      .preload('sender', (sender) => {
-        sender.preload('avatar')
-        sender.preload('banner')
-      })
       .paginate(request.page, request.perPage)
   }
 }
