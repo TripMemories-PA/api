@@ -3,10 +3,8 @@ import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import {
   BaseModel,
-  afterFetch,
   afterFind,
   afterPaginate,
-  beforeFetch,
   belongsTo,
   column,
   computed,
