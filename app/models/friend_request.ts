@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, afterFind, afterPaginate, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 
@@ -23,4 +23,16 @@ export default class FriendRequest extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @afterFind()
+  static async loadFriendRequestRelations(request: FriendRequest) {
+    await request.load('sender', (sender) => {
+      sender.preload('avatar')
+    })
+  }
+
+  @afterPaginate()
+  static async loadFriendRequestsRelations(requests: FriendRequest[]) {
+    await Promise.all(requests.map((request) => FriendRequest.loadFriendRequestRelations(request)))
+  }
 }

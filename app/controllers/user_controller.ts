@@ -7,10 +7,10 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class UserController {
   constructor(protected userService: UserService) {}
 
-  async index({ response, auth, request }: HttpContext) {
+  async index({ response, request }: HttpContext) {
     const payload = await request.validateUsing(indexUserValidator)
 
-    const users = await this.userService.index(auth.user!, payload)
+    const users = await this.userService.index(payload)
 
     return response.ok(users.toJSON())
   }
@@ -19,13 +19,5 @@ export default class UserController {
     const user = await this.userService.show(params.id)
 
     return response.ok(user.toJSON())
-  }
-
-  async indexFriends({ response, request, params }: HttpContext) {
-    const payload = await request.validateUsing(indexUserValidator)
-
-    const friends = await this.userService.indexFriends(params.id, payload)
-
-    return response.ok(friends.toJSON())
   }
 }

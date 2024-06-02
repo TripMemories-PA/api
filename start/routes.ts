@@ -46,7 +46,7 @@ router
 
     router
       .group(() => {
-        router.get('', [FriendController, 'index'])
+        router.get('', [FriendController, 'indexMyFriends'])
         router.delete('/:id', [FriendController, 'delete'])
       })
       .prefix('/friends')
@@ -58,7 +58,7 @@ router
   .group(() => {
     router.get('', [UserController, 'index'])
     router.get('/:id', [UserController, 'show'])
-    router.get('/:id/friends', [UserController, 'indexFriends'])
+    router.get('/:id/friends', [FriendController, 'indexFriends'])
   })
   .prefix('users')
   .middleware(middleware.auth())

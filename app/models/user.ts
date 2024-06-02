@@ -1,12 +1,22 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  afterFind,
+  afterPaginate,
+  belongsTo,
+  column,
+  computed,
+  hasMany,
+  manyToMany,
+} from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import UploadFile from './upload_file.js'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import FriendRequest from './friend_request.js'
+import { HttpContext } from '@adonisjs/core/http'
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
   passwordColumnName: 'password',
@@ -63,8 +73,18 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotForeignKey: 'user_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'friend_id',
+    serializeAs: null,
   })
   declare friends: ManyToMany<typeof User>
+
+  @computed()
+  declare isFriend: boolean | undefined
+
+  @computed()
+  declare isSentFriendRequest: boolean | undefined
+
+  @computed()
+  declare isReceivedFriendRequest: boolean | undefined
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -73,4 +93,56 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   static readonly accessTokens = DbAccessTokensProvider.forModel(User)
+
+  @afterFind()
+  static async loadUserRelations(user: User) {
+    try {
+      await user.load((loader) => {
+        loader.load('avatar')
+        loader.load('banner')
+      })
+
+      const ctx = HttpContext.getOrFail()
+      const currentUser = ctx.auth.user
+
+      if (!currentUser || currentUser.id === user.id) {
+        user.isFriend = undefined
+        user.isSentFriendRequest = undefined
+        user.isReceivedFriendRequest = undefined
+        return
+      }
+
+      const friends = await user
+        .related('friends')
+        .query()
+        .where('friend_id', currentUser.id)
+        .first()
+
+      user.isFriend = !!friends
+
+      const sentFriendRequest = await user
+        .related('sentFriendRequests')
+        .query()
+        .where('receiver_id', currentUser.id)
+        .first()
+
+      const receivedFriendRequest = await user
+        .related('receivedFriendRequests')
+        .query()
+        .where('sender_id', currentUser.id)
+        .first()
+
+      user.isSentFriendRequest = !!sentFriendRequest
+      user.isReceivedFriendRequest = !!receivedFriendRequest
+    } catch {
+      user.isFriend = undefined
+      user.isSentFriendRequest = undefined
+      user.isReceivedFriendRequest = undefined
+    }
+  }
+
+  @afterPaginate()
+  static async loadUsersRelations(users: User[]) {
+    await Promise.all(users.map((user) => User.loadUserRelations(user)))
+  }
 }

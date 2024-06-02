@@ -4,13 +4,15 @@ import { PaginateRequest } from '../types/requests/paginate_request.js'
 
 @inject()
 export default class FriendRequestService {
-  async store(user: User, receiverId: number) {
-    const request = await user.related('sentFriendRequests').create({ receiverId })
+  async store(userId: number, receiverId: number) {
+    const user = await User.findOrFail(userId)
 
-    return request
+    return await user.related('sentFriendRequests').create({ receiverId })
   }
 
-  async delete(user: User, requestId: number) {
+  async delete(userId: number, requestId: number) {
+    const user = await User.findOrFail(userId)
+
     const request = await user
       .related('receivedFriendRequests')
       .query()
@@ -20,7 +22,9 @@ export default class FriendRequestService {
     await request.delete()
   }
 
-  async accept(user: User, requestId: number) {
+  async accept(userId: number, requestId: number) {
+    const user = await User.findOrFail(userId)
+
     const request = await user
       .related('receivedFriendRequests')
       .query()
@@ -35,14 +39,12 @@ export default class FriendRequestService {
     await request.delete()
   }
 
-  async index(user: User, request: PaginateRequest) {
-    const query = user
+  async index(userId: number, request: PaginateRequest) {
+    const user = await User.findOrFail(userId)
+
+    return await user
       .related('receivedFriendRequests')
       .query()
-      .preload('sender', (senders) => {
-        senders.preload('avatar')
-      })
-
-    return await query.paginate(request.page, request.perPage)
+      .paginate(request.page, request.perPage)
   }
 }

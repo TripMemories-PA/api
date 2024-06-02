@@ -13,19 +13,19 @@ export default class FriendRequestController {
       meta: { userId: auth.user!.id },
     })
 
-    const friendRequest = await this.friendRequestService.store(auth.user!, payload.userId)
+    const friendRequest = await this.friendRequestService.store(auth.user!.id, payload.userId)
 
     return response.created(friendRequest.toJSON())
   }
 
   async delete({ response, auth, params }: HttpContext) {
-    await this.friendRequestService.delete(auth.user!, params.id)
+    await this.friendRequestService.delete(auth.user!.id, params.id)
 
     return response.noContent()
   }
 
   async accept({ response, auth, params }: HttpContext) {
-    await this.friendRequestService.accept(auth.user!, params.id)
+    await this.friendRequestService.accept(auth.user!.id, params.id)
 
     return response.noContent()
   }
@@ -33,7 +33,7 @@ export default class FriendRequestController {
   async index({ response, auth, request }: HttpContext) {
     const payload = await request.validateUsing(indexFriendRequestValidator)
 
-    const friendRequests = await this.friendRequestService.index(auth.user!, payload)
+    const friendRequests = await this.friendRequestService.index(auth.user!.id, payload)
 
     return response.ok(friendRequests.toJSON())
   }
