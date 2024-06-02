@@ -10,7 +10,7 @@
     "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
-    "migrate:fresh": "node ace migration:fresh",
+    "migrate:fresh": "node ace migration:fresh --seed",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
