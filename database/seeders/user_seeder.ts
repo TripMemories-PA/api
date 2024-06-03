@@ -14,29 +14,22 @@ export default class extends BaseSeeder {
         username: `user${i}`,
         email: `user${i}@mail.com`,
         password: defaultPassword,
-      }).create()
+      })
+        .with('avatar')
+        .with('banner')
+        .with('sentFriendRequests', countSentFriendRequests)
+        .with('receivedFriendRequests', countReceivedFriendRequests)
+        .with('friends', countFriends, (friend) => {
+          friend.with('avatar').with('banner').merge({
+            password: defaultPassword,
+          })
+        })
+        .create()
 
-      const friends = await UserFactory.merge({
-        password: defaultPassword,
-      }).createMany(countFriends)
-      const friendIds = friends.map((friend) => friend.id)
-      await user.related('friends').attach(friendIds)
+      const friends = await user.related('friends').query()
+
       for (const friend of friends) {
         await friend.related('friends').attach([user.id])
-      }
-
-      const sentfriendRequests = await UserFactory.merge({
-        password: defaultPassword,
-      }).createMany(countSentFriendRequests)
-      for (const sentfriendRequest of sentfriendRequests) {
-        await user.related('sentFriendRequests').create({ receiverId: sentfriendRequest.id })
-      }
-
-      const receivedFriendRequests = await UserFactory.merge({
-        password: defaultPassword,
-      }).createMany(countReceivedFriendRequests)
-      for (const receivedFriendRequest of receivedFriendRequests) {
-        await user.related('receivedFriendRequests').create({ senderId: receivedFriendRequest.id })
       }
     }
   }
