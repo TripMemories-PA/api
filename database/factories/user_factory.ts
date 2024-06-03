@@ -1,6 +1,5 @@
 import factory from '@adonisjs/lucid/factories'
 import User from '#models/user'
-import { FriendRequestFactory } from './friend_request_factory.js'
 
 export const UserFactory = factory
   .define(User, async ({ faker }) => {
@@ -12,7 +11,4 @@ export const UserFactory = factory
       lastname: faker.person.lastName(),
     }
   })
-  .relation('friends', () => UserFactory)
-  .relation('sentFriendRequests', () => FriendRequestFactory)
-  .relation('receivedFriendRequests', () => FriendRequestFactory)
   .build()
