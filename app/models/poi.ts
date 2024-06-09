@@ -29,6 +29,12 @@ export default class Poi extends BaseModel {
   @column()
   declare address: string
 
+  @column({ serializeAs: null })
+  declare reference: string
+
+  @column()
+  declare typeId: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

@@ -33,5 +33,10 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.dropTable(this.tableName)
+
+    this.schema.alterTable('users', (table) => {
+      table.dropColumn('avatar_id')
+      table.dropColumn('banner_id')
+    })
   }
 }

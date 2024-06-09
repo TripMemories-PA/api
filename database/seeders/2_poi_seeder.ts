@@ -1,11 +1,13 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import db from '@adonisjs/lucid/services/db'
+import { PoiTypes } from '../../app/types/models/poi_types.js'
 
 export default class extends BaseSeeder {
   async run() {
     let index = 0
-    let size = 100
+    let size = 300
     let total = 0
+    const startTime = new Date()
 
     do {
       const result = await this.getPois(index, size)
@@ -20,6 +22,10 @@ export default class extends BaseSeeder {
 
       console.log(`Treated ${index} of ${total} POIs`)
     } while (index < total)
+
+    const endTime = new Date()
+
+    console.log(`POIs imported in ${endTime.getTime() - startTime.getTime()} ms`)
   }
 
   async getPois(index: number, size: number) {
@@ -62,10 +68,15 @@ export default class extends BaseSeeder {
         }
 
         const streetAddress = item.isLocatedAt[0].schema_address[0].schema_streetAddress
+        const types = item.rdf_type
+
+        const poiType = this.getTypes().find((type: any) => types.includes(type.name))
 
         return {
           name: item.rdfs_label[0].value,
           cover_id: coverId,
+          type_id: poiType!.id,
+          reference: item.dc_identifier[0],
           description: item.hasDescription[0].shortDescription[0].value,
           latitude: item.isLocatedAt[0].schema_geo[0].schema_latitude[0],
           longitude: item.isLocatedAt[0].schema_geo[0].schema_longitude[0],
@@ -120,6 +131,27 @@ export default class extends BaseSeeder {
     return null
   }
 
+  getTypes() {
+    return [
+      {
+        id: PoiTypes.MUSEUM,
+        name: 'https://www.datatourisme.fr/ontology/core#Museum',
+      },
+      {
+        id: PoiTypes.PARK,
+        name: 'https://www.datatourisme.fr/ontology/core#ParkAndGarden',
+      },
+      {
+        id: PoiTypes.MONUMENT,
+        name: 'https://www.datatourisme.fr/ontology/core#RemarkableBuilding',
+      },
+      {
+        id: PoiTypes.RELIGIOUS,
+        name: 'https://www.datatourisme.fr/ontology/core#ReligiousSite',
+      },
+    ]
+  }
+
   getQuery() {
     return `
       query GetPoi($size: Int!, $from: Int!) {
@@ -146,6 +178,8 @@ export default class extends BaseSeeder {
         ) {
           total
           results {
+            dc_identifier
+            rdf_type
             hasDescription {
               shortDescription {
                 value
