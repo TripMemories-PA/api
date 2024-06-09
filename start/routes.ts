@@ -8,6 +8,7 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const PoiController = () => import('#controllers/poi_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const MeController = () => import('#controllers/me_controller')
 const UserController = () => import('#controllers/user_controller')
@@ -62,3 +63,9 @@ router
   })
   .prefix('users')
   .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.get('', [PoiController, 'index'])
+  })
+  .prefix('pois')

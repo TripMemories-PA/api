@@ -64,6 +64,7 @@ export default class extends BaseSeeder {
         const coverId = await this.getCoverId(representations)
 
         if (!coverId) {
+          console.log(`No cover found for POI ${item.rdfs_label[0].value}`)
           return null
         }
 

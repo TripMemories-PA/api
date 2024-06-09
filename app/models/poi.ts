@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, afterFind, afterPaginate, belongsTo, column } from '@adonisjs/lucid/orm'
+import UploadFile from './upload_file.js'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import PoiType from './poi_type.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -13,6 +16,11 @@ export default class Poi extends BaseModel {
 
   @column()
   declare coverId: number
+
+  @belongsTo(() => UploadFile, {
+    foreignKey: 'coverId',
+  })
+  declare cover: BelongsTo<typeof UploadFile>
 
   @column()
   declare latitude: number
@@ -35,9 +43,27 @@ export default class Poi extends BaseModel {
   @column()
   declare typeId: number
 
+  @belongsTo(() => PoiType, {
+    foreignKey: 'typeId',
+  })
+  declare type: BelongsTo<typeof PoiType>
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @afterFind()
+  static async loadPoiRelations(poi: Poi) {
+    await poi.load((loader) => {
+      loader.load('cover')
+      loader.load('type')
+    })
+  }
+
+  @afterPaginate()
+  static async loadPoisRelations(pois: Poi[]) {
+    await Promise.all(pois.map((poi) => Poi.loadPoiRelations(poi)))
+  }
 }
