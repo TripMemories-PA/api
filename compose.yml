@@ -28,6 +28,7 @@ services:
     command: server /data --console-address ":9001"
 
   createbucket:
+    container_name: createbucket
     image: minio/mc
     depends_on:
       - minio
@@ -40,6 +41,7 @@ services:
       exit 0;
       "
   blazegraph:
+    container_name: blazegraph
     image: conjecto/blazegraph:2.1.5
     restart: always
     ports:
@@ -49,10 +51,11 @@ services:
     volumes:
       - ./dataset:/docker-entrypoint-initdb.d
 
-    datatourisme:
-        build: docker
-        ports:
-            - "8080:80"
-        restart: always
-        depends_on:
-            - blazegraph
+  datatourisme:
+    container_name: datatourisme
+    build: docker
+    ports:
+        - "8080:80"
+    restart: always
+    depends_on:
+        - blazegraph

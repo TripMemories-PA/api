@@ -1,6 +1,7 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import db from '@adonisjs/lucid/services/db'
 import { PoiTypes } from '../../app/types/models/poi_types.js'
+import env from '#start/env'
 
 export default class extends BaseSeeder {
   async run() {
@@ -29,7 +30,7 @@ export default class extends BaseSeeder {
   }
 
   async getPois(index: number, size: number) {
-    const endpoint = 'http://localhost:8080'
+    const endpoint = env.get('GRAPHQL_ENDPOINT')
     const query = this.getQuery()
 
     const variables = {

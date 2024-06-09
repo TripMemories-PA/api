@@ -39,4 +39,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   MINIO_ACCESS_KEY: Env.schema.string(),
   MINIO_SECRET_KEY: Env.schema.string(),
   MINIO_BUCKET_NAME: Env.schema.string(),
+
+  GRAPHQL_ENDPOINT: Env.schema.string(),
 })
