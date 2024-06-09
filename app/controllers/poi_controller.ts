@@ -14,4 +14,10 @@ export default class PoiController {
 
     return response.ok(pois.toJSON())
   }
+
+  async show({ response, params }: HttpContext) {
+    const poi = await this.poiService.show(params.id)
+
+    return response.ok(poi)
+  }
 }

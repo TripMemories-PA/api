@@ -15,4 +15,8 @@ export default class PoiService {
 
     return await query.paginate(payload.page, payload.perPage)
   }
+
+  async show(id: number) {
+    return await Poi.query().where('id', id).firstOrFail()
+  }
 }

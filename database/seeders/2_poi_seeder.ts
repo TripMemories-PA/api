@@ -55,6 +55,14 @@ export default class extends BaseSeeder {
       })
   }
 
+  areAllLettersCapital(str: string) {
+    return /[A-Z]/.test(str) && str === str.toUpperCase()
+  }
+
+  capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  }
+
   async formatPois(pois: any) {
     return await Promise.all(
       pois.results.map(async (item: any) => {
@@ -64,7 +72,6 @@ export default class extends BaseSeeder {
         const coverId = await this.getCoverId(representations)
 
         if (!coverId) {
-          console.log(`No cover found for POI ${item.rdfs_label[0].value}`)
           return null
         }
 
@@ -72,9 +79,10 @@ export default class extends BaseSeeder {
         const types = item.rdf_type
 
         const poiType = this.getTypes().find((type: any) => types.includes(type.name))
+        const name = item.rdfs_label[0].value
 
         return {
-          name: item.rdfs_label[0].value,
+          name: this.areAllLettersCapital(name) ? this.capitalizeFirstLetter(name) : name,
           cover_id: coverId,
           type_id: poiType!.id,
           reference: item.dc_identifier[0],

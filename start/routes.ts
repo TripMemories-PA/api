@@ -67,5 +67,6 @@ router
 router
   .group(() => {
     router.get('', [PoiController, 'index'])
+    router.get('/:id', [PoiController, 'show'])
   })
   .prefix('pois')
