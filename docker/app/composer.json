@@ -1,0 +1,13 @@
+{
+    "type": "project",
+    "authors": [
+        {
+            "name": "Conjecto",
+            "email": "contact@conjecto.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "datatourisme/api": "^3.0"
+    }
+}

@@ -19,9 +19,9 @@ export default class UserService {
     if (request.search) {
       query.where((builder) => {
         builder
-          .where('username', 'like', `%${request.search}%`)
-          .orWhereRaw("concat(firstname, ' ', lastname) like ?", [`%${request.search}%`])
-          .orWhereRaw("concat(lastname, ' ', firstname) like ?", [`%${request.search}%`])
+          .where('username', 'ilike', `%${request.search}%`)
+          .orWhereRaw("concat(firstname, ' ', lastname) ilike ?", [`%${request.search}%`])
+          .orWhereRaw("concat(lastname, ' ', firstname) ilike ?", [`%${request.search}%`])
       })
     }
 

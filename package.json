@@ -5,14 +5,14 @@
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {
-    "docker": "docker-compose up -d",
+    "docker": "docker compose up -d",
     "start": "node bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
     "migrate:fresh": "node ace migration:fresh --seed",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --ignore-pattern docker/",
+    "lint:fix": "eslint . --ignore-pattern docker/ --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },

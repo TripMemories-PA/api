@@ -6,8 +6,8 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('filename').notNullable()
-      table.string('url').notNullable()
+      table.text('filename').notNullable()
+      table.text('url').notNullable()
       table.string('mime_type').notNullable()
 
       table.timestamp('created_at')
@@ -33,5 +33,10 @@ export default class extends BaseSchema {
 
   async down() {
     this.schema.dropTable(this.tableName)
+
+    this.schema.alterTable('users', (table) => {
+      table.dropColumn('avatar_id')
+      table.dropColumn('banner_id')
+    })
   }
 }

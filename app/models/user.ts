@@ -17,6 +17,7 @@ import UploadFile from './upload_file.js'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import FriendRequest from './friend_request.js'
 import { HttpContext } from '@adonisjs/core/http'
+
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
   passwordColumnName: 'password',
