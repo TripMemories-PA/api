@@ -8,65 +8,21 @@ export default class extends BaseSeeder {
     let total = 0
 
     do {
-      const poi = await this.queryPoi(index, size)
-      console.log('received poi')
-      total = poi.total
+      const result = await this.getPois(index, size)
+      total = result.total
 
-      await db.table('pois').insert(
-        await Promise.all(
-          poi.results.map(async (item: any) => {
-            const now = new Date()
+      const pois = await this.formatPois(result)
 
-            const images = item.hasRepresentation[0].ebucore_hasRelatedResource
-            let coverId = null
-
-            for (const image of images) {
-              if (image.ebucore_locator.length > 0) {
-                const url = image.ebucore_locator[0]
-                const filename = url.split('/').pop()
-                const extension = filename.split('.').pop().toLowerCase()
-
-                const res = await db
-                  .table('upload_files')
-                  .insert({
-                    filename: filename,
-                    url: url,
-                    mime_type: ['jpg', 'jpeg'].includes(extension) ? 'image/jpeg' : 'image/png',
-                    created_at: now,
-                    updated_at: now,
-                  })
-                  .returning('id')
-
-                coverId = res[0].id
-
-                break
-              }
-            }
-
-            return {
-              name: item.rdfs_label[0].value,
-              cover_id: coverId,
-              description: item.hasDescription[0].shortDescription[0].value,
-              latitude: item.isLocatedAt[0].schema_geo[0].schema_latitude[0],
-              longitude: item.isLocatedAt[0].schema_geo[0].schema_longitude[0],
-              city: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
-              zip_code: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
-              address: item.isLocatedAt[0].schema_address[0].schema_streetAddress
-                ? item.isLocatedAt[0].schema_address[0].schema_streetAddress[0]
-                : null,
-              updated_at: now,
-              created_at: now,
-            }
-          })
-        )
-      )
+      await db.table('pois').insert(pois)
 
       index += size
-      console.log(`Imported ${index} of ${total} POIs`)
+      if (index > total) index = total
+
+      console.log(`Treated ${index} of ${total} POIs`)
     } while (index < total)
   }
 
-  async queryPoi(index: number, size: number) {
+  async getPois(index: number, size: number) {
     const endpoint = 'http://localhost:8080'
     const query = this.getQuery()
 
@@ -93,6 +49,77 @@ export default class extends BaseSeeder {
       })
   }
 
+  async formatPois(pois: any) {
+    return await Promise.all(
+      pois.results.map(async (item: any) => {
+        const now = new Date()
+
+        const representations = item.hasRepresentation
+        const coverId = await this.getCoverId(representations)
+
+        if (!coverId) {
+          return null
+        }
+
+        const streetAddress = item.isLocatedAt[0].schema_address[0].schema_streetAddress
+
+        return {
+          name: item.rdfs_label[0].value,
+          cover_id: coverId,
+          description: item.hasDescription[0].shortDescription[0].value,
+          latitude: item.isLocatedAt[0].schema_geo[0].schema_latitude[0],
+          longitude: item.isLocatedAt[0].schema_geo[0].schema_longitude[0],
+          city: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
+          zip_code: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+          address: streetAddress ? streetAddress[0] : null,
+          updated_at: now,
+          created_at: now,
+        }
+      })
+    ).then((results) => results.filter((item: any) => item !== null))
+  }
+
+  async getCoverId(representations: any) {
+    const now = new Date()
+
+    for (const representation of representations) {
+      const images = representation.ebucore_hasRelatedResource
+
+      const validImage = images.find((image: any) => {
+        const url = image.ebucore_locator[0]
+        if (url) {
+          const filename = url.split('/').pop()
+          const extension = filename.split('.').pop().toLowerCase()
+          return ['jpg', 'jpeg', 'png'].includes(extension)
+        }
+        return false
+      })
+
+      if (validImage) {
+        const url = validImage.ebucore_locator[0]
+        const filename = url.split('/').pop()
+        const extension = filename.split('.').pop().toLowerCase()
+
+        const mimeType = ['jpg', 'jpeg'].includes(extension) ? 'image/jpeg' : 'image/png'
+
+        const res = await db
+          .table('upload_files')
+          .insert({
+            filename,
+            url,
+            mime_type: mimeType,
+            created_at: now,
+            updated_at: now,
+          })
+          .returning('id')
+
+        return res[0].id
+      }
+    }
+
+    return null
+  }
+
   getQuery() {
     return `
       query GetPoi($size: Int!, $from: Int!) {
@@ -101,33 +128,19 @@ export default class extends BaseSeeder {
           from: $from,
           filters: [
             {
+              dc_identifier: {
+                _ne: "PNAPIC060V503HDW"
+              }
               hasDescription: {
                 shortDescription: {
-                  _ne: null
                 }
               }
-              _or: [
-                {
-                  rdf_type: {
-                    _eq: "https://www.datatourisme.fr/ontology/core#Museum"
+              hasRepresentation: {
+                ebucore_hasRelatedResource: {
+                  ebucore_locator: {
                   }
                 }
-                {
-                  rdf_type: {
-                    _eq: "https://www.datatourisme.fr/ontology/core#ParkAndGarden"
-                  }
-                }
-                {
-                  rdf_type: {
-                    _eq: "https://www.datatourisme.fr/ontology/core#ReligiousSite"
-                  }
-                }
-                {
-                  rdf_type: {
-                    _eq: "https://www.datatourisme.fr/ontology/core#RemarkableBuilding"
-                  }
-                }
-              ]
+              }
             }
           ]
         ) {
