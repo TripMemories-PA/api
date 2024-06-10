@@ -82,10 +82,10 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare isFriend: boolean | undefined
 
   @computed()
-  declare isSentFriendRequest: boolean | undefined
+  declare hasSentFriendRequest: boolean | undefined
 
   @computed()
-  declare isReceivedFriendRequest: boolean | undefined
+  declare hasReceivedFriendRequest: boolean | undefined
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -108,8 +108,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
       if (!currentUser || currentUser.id === user.id) {
         user.isFriend = undefined
-        user.isSentFriendRequest = undefined
-        user.isReceivedFriendRequest = undefined
+        user.hasSentFriendRequest = undefined
+        user.hasReceivedFriendRequest = undefined
         return
       }
 
@@ -133,12 +133,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
         .where('sender_id', currentUser.id)
         .first()
 
-      user.isSentFriendRequest = !!sentFriendRequest
-      user.isReceivedFriendRequest = !!receivedFriendRequest
+      user.hasSentFriendRequest = !!sentFriendRequest
+      user.hasReceivedFriendRequest = !!receivedFriendRequest
     } catch {
       user.isFriend = undefined
-      user.isSentFriendRequest = undefined
-      user.isReceivedFriendRequest = undefined
+      user.hasSentFriendRequest = undefined
+      user.hasReceivedFriendRequest = undefined
     }
   }
 
