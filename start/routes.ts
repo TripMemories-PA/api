@@ -8,6 +8,7 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const PostController = () => import('#controllers/post_controller')
 const PoiController = () => import('#controllers/poi_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const MeController = () => import('#controllers/me_controller')
@@ -68,5 +69,15 @@ router
   .group(() => {
     router.get('', [PoiController, 'index'])
     router.get('/:id', [PoiController, 'show'])
+    router.get('/:id/posts', [PoiController, 'indexPosts'])
   })
   .prefix('pois')
+
+router
+  .group(() => {
+    router.post('', [PostController, 'store'])
+    router.post('/image', [PostController, 'storeImage'])
+    router.get('/:id', [PostController, 'show'])
+  })
+  .prefix('posts')
+  .middleware(middleware.auth())

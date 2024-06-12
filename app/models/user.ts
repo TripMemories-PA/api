@@ -42,7 +42,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare lastname: string
 
-  @column({ serializeAs: null })
+  @column()
   declare avatarId: number
 
   @belongsTo(() => UploadFile, {
@@ -50,7 +50,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   })
   declare avatar: BelongsTo<typeof UploadFile>
 
-  @column({ serializeAs: null })
+  @column()
   declare bannerId: number
 
   @belongsTo(() => UploadFile, {
