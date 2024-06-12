@@ -1,5 +1,6 @@
 import { UserFactory } from '#database/factories/user_factory'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
+import { count } from 'node:console'
 
 export default class extends BaseSeeder {
   async run() {
@@ -7,6 +8,7 @@ export default class extends BaseSeeder {
     const countFriends = 5
     const countSentFriendRequests = 3
     const countReceivedFriendRequests = 3
+    const countPosts = 3
     const defaultPassword = 'Test1234!'
 
     for (let i = 1; i <= countUser; i++) {
@@ -19,6 +21,7 @@ export default class extends BaseSeeder {
         .with('banner')
         .with('sentFriendRequests', countSentFriendRequests)
         .with('receivedFriendRequests', countReceivedFriendRequests)
+        .with('posts', countPosts)
         .with('friends', countFriends, (friend) => {
           friend.with('avatar').with('banner').merge({
             password: defaultPassword,

@@ -13,7 +13,7 @@ export const ReceivedFriendRequestFactory = factory
 
     return {
       senderId: sender.id,
-      receiverId: Number(faker.string.numeric()),
+      receiverId: faker.number.int(),
     }
   })
   .build()
