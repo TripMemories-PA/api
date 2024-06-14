@@ -15,12 +15,7 @@ export default class extends BaseSchema {
       table.integer('poi_id').unsigned().references('id').inTable('pois').onDelete('CASCADE')
       table.text('content').notNullable()
       table.decimal('note', 2, 1).notNullable()
-      table
-        .integer('image_id')
-        .unsigned()
-        .references('id')
-        .inTable('upload_files')
-        .onDelete('CASCADE')
+      table.integer('image_id').unsigned().references('id').inTable('upload_files')
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

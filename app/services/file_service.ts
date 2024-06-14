@@ -46,5 +46,7 @@ export default class FileService {
 
   async delete(file: UploadFile) {
     await this.client.removeObject(this.bucketName, file.filename)
+
+    await file.delete()
   }
 }
