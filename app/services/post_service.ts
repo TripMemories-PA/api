@@ -4,10 +4,14 @@ import { CreatePostRequest } from '../types/requests/post/create_post_request.js
 import { IndexPostRequest } from '../types/requests/post/index_post_request.js'
 import AuthService from './auth_service.js'
 import { Exception } from '@adonisjs/core/exceptions'
+import FileService from './file_service.js'
 
 @inject()
 export default class PostService {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private fileService: FileService
+  ) {}
 
   async indexPoiPosts(poiId: number, payload: IndexPostRequest) {
     return await Post.query()
@@ -46,6 +50,9 @@ export default class PostService {
       throw new Exception('You are not authorized to delete this post', { status: 403 })
     }
 
+    const image = post.image
+
     await post.delete()
+    await this.fileService.delete(image)
   }
 }

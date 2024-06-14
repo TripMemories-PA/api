@@ -8,8 +8,6 @@ export default class extends BaseSeeder {
     let index = 0
     let size = 300
     let total = 0
-    const startTime = new Date()
-
     do {
       const result = await this.getPois(index, size)
       total = result.total
@@ -23,10 +21,6 @@ export default class extends BaseSeeder {
 
       console.log(`Treated ${index} of ${total} POIs`)
     } while (index < total)
-
-    const endTime = new Date()
-
-    console.log(`POIs imported in ${endTime.getTime() - startTime.getTime()} ms`)
   }
 
   async getPois(index: number, size: number) {

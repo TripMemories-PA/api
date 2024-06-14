@@ -28,7 +28,6 @@ export default class PoiController {
 
   async indexPosts({ response, request, params }: HttpContext) {
     const payload = await request.validateUsing(indexPostValidator)
-    console.log(params.id)
 
     const posts = await this.postService.indexPoiPosts(params.id, payload)
 
