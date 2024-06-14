@@ -80,6 +80,7 @@ router
     router.post('', [PostController, 'store'])
     router.post('/image', [PostController, 'storeImage'])
     router.get('/:id', [PostController, 'show'])
+    router.delete('/:id', [PostController, 'delete'])
   })
   .prefix('posts')
   .middleware(middleware.auth())

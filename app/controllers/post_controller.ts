@@ -34,4 +34,10 @@ export default class PostController {
 
     return response.created(uploadedFile.toJSON())
   }
+
+  async delete({ response, params }: HttpContext) {
+    await this.postService.delete(params.id)
+
+    return response.noContent()
+  }
 }
