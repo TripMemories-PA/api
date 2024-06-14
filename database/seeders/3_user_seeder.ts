@@ -1,6 +1,5 @@
 import { UserFactory } from '#database/factories/user_factory'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import { count } from 'node:console'
 
 export default class extends BaseSeeder {
   async run() {

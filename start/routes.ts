@@ -36,6 +36,7 @@ router
     router.delete('', [MeController, 'delete'])
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
+    router.get('/posts', [MeController, 'indexPosts'])
 
     router
       .group(() => {
@@ -61,6 +62,7 @@ router
     router.get('', [UserController, 'index'])
     router.get('/:id', [UserController, 'show'])
     router.get('/:id/friends', [FriendController, 'indexFriends'])
+    router.get('/:id/posts', [UserController, 'indexPosts'])
   })
   .prefix('users')
   .middleware(middleware.auth())

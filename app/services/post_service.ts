@@ -10,6 +10,13 @@ export default class PostService {
       .paginate(payload.page, payload.perPage)
   }
 
+  async indexUserPosts(userId: number, payload: IndexPostRequest) {
+    return await Post.query()
+      .where('createdById', userId)
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
+  }
+
   async show(id: number) {
     return await Post.query().where('id', id).firstOrFail()
   }
