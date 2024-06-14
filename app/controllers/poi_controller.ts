@@ -1,11 +1,16 @@
 import PoiService from '#services/poi_service'
+import PostService from '#services/post_service'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
+import { indexPostValidator } from '#validators/post/index_post_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class PoiController {
-  constructor(protected poiService: PoiService) {}
+  constructor(
+    protected poiService: PoiService,
+    protected postService: PostService
+  ) {}
 
   async index({ response, request }: HttpContext) {
     const payload = await request.validateUsing(indexPoiValidator)
@@ -19,5 +24,14 @@ export default class PoiController {
     const poi = await this.poiService.show(params.id)
 
     return response.ok(poi)
+  }
+
+  async indexPosts({ response, request, params }: HttpContext) {
+    const payload = await request.validateUsing(indexPostValidator)
+    console.log(params.id)
+
+    const posts = await this.postService.indexPoiPosts(params.id, payload)
+
+    return response.ok(posts.toJSON())
   }
 }

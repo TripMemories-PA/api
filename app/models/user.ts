@@ -17,6 +17,7 @@ import UploadFile from './upload_file.js'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import FriendRequest from './friend_request.js'
 import { HttpContext } from '@adonisjs/core/http'
+import Post from './post.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -42,7 +43,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare lastname: string
 
-  @column({ serializeAs: null })
+  @column()
   declare avatarId: number
 
   @belongsTo(() => UploadFile, {
@@ -50,7 +51,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   })
   declare avatar: BelongsTo<typeof UploadFile>
 
-  @column({ serializeAs: null })
+  @column()
   declare bannerId: number
 
   @belongsTo(() => UploadFile, {
@@ -77,6 +78,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     serializeAs: null,
   })
   declare friends: ManyToMany<typeof User>
+
+  @hasMany(() => Post, {
+    foreignKey: 'createdById',
+  })
+  declare posts: HasMany<typeof Post>
 
   @computed()
   declare isFriend: boolean | undefined

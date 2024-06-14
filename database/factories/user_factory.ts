@@ -4,6 +4,7 @@ import { AvatarFactory } from './avatar_factory.js'
 import { BannerFactory } from './banner_factory.js'
 import { SentFriendRequestFactory } from './sent_friend_request_factory.js'
 import { ReceivedFriendRequestFactory } from './received_friend_request_factory.js'
+import { PostFactory } from './post_factory.js'
 
 export const UserFactory = factory
   .define(User, async ({ faker }) => {
@@ -20,4 +21,5 @@ export const UserFactory = factory
   .relation('sentFriendRequests', () => SentFriendRequestFactory)
   .relation('receivedFriendRequests', () => ReceivedFriendRequestFactory)
   .relation('friends', () => UserFactory)
+  .relation('posts', () => PostFactory)
   .build()

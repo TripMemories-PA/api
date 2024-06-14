@@ -8,6 +8,7 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const PostController = () => import('#controllers/post_controller')
 const PoiController = () => import('#controllers/poi_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const MeController = () => import('#controllers/me_controller')
@@ -35,6 +36,7 @@ router
     router.delete('', [MeController, 'delete'])
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
+    router.get('/posts', [MeController, 'indexPosts'])
 
     router
       .group(() => {
@@ -60,6 +62,7 @@ router
     router.get('', [UserController, 'index'])
     router.get('/:id', [UserController, 'show'])
     router.get('/:id/friends', [FriendController, 'indexFriends'])
+    router.get('/:id/posts', [UserController, 'indexPosts'])
   })
   .prefix('users')
   .middleware(middleware.auth())
@@ -68,5 +71,15 @@ router
   .group(() => {
     router.get('', [PoiController, 'index'])
     router.get('/:id', [PoiController, 'show'])
+    router.get('/:id/posts', [PoiController, 'indexPosts'])
   })
   .prefix('pois')
+
+router
+  .group(() => {
+    router.post('', [PostController, 'store'])
+    router.post('/image', [PostController, 'storeImage'])
+    router.get('/:id', [PostController, 'show'])
+  })
+  .prefix('posts')
+  .middleware(middleware.auth())

@@ -1,4 +1,6 @@
+import PostService from '#services/post_service'
 import UserService from '#services/user_service'
+import { indexPostValidator } from '#validators/post/index_post_validator'
 import { storeAvatarValidator } from '#validators/user/store_avatar_validator'
 import { storeBannerValidator } from '#validators/user/store_banner_validator'
 import { updateUserValidator } from '#validators/user/update_user_validator'
@@ -7,7 +9,10 @@ import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class MeController {
-  constructor(protected userService: UserService) {}
+  constructor(
+    protected userService: UserService,
+    protected postService: PostService
+  ) {}
 
   async show({ response, auth }: HttpContext) {
     const user = await this.userService.show(auth.user!.id)
@@ -45,5 +50,13 @@ export default class MeController {
     await this.userService.delete(auth.user!.id)
 
     return response.noContent()
+  }
+
+  async indexPosts({ response, auth, request }: HttpContext) {
+    const payload = await request.validateUsing(indexPostValidator)
+
+    const posts = await this.postService.indexUserPosts(auth.user!.id, payload)
+
+    return response.ok(posts.toJSON())
   }
 }
