@@ -5,6 +5,7 @@ import PostService from '#services/post_service'
 import { indexCommentValidator } from '#validators/comment/index_comment_validator'
 import { createPostImageValidator } from '#validators/post/create_post_image_validator'
 import { createPostValidator } from '#validators/post/create_post_validator'
+import { indexPostValidator } from '#validators/post/index_post_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -52,6 +53,14 @@ export default class PostController {
     const comments = await this.commentService.indexPostComments(params.id, payload)
 
     return response.ok(comments.toJSON())
+  }
+
+  async index({ response, request }: HttpContext) {
+    const payload = await request.validateUsing(indexPostValidator)
+
+    const posts = await this.postService.index(payload)
+
+    return response.ok(posts.toJSON())
   }
 
   async like({ response, auth, params }: HttpContext) {
