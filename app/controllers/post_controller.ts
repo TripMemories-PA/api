@@ -1,5 +1,7 @@
+import CommentService from '#services/comment_service'
 import FileService from '#services/file_service'
 import PostService from '#services/post_service'
+import { indexCommentValidator } from '#validators/comment/index_comment_validator'
 import { createPostImageValidator } from '#validators/post/create_post_image_validator'
 import { createPostValidator } from '#validators/post/create_post_validator'
 import { inject } from '@adonisjs/core'
@@ -9,7 +11,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class PostController {
   constructor(
     protected postService: PostService,
-    protected fileService: FileService
+    protected fileService: FileService,
+    protected commentService: CommentService
   ) {}
 
   async show({ response, params }: HttpContext) {
@@ -39,5 +42,13 @@ export default class PostController {
     await this.postService.delete(params.id)
 
     return response.noContent()
+  }
+
+  async indexComments({ response, request, params }: HttpContext) {
+    const payload = await request.validateUsing(indexCommentValidator)
+
+    const comments = await this.commentService.indexPostComments(params.id, payload)
+
+    return response.ok(comments.toJSON())
   }
 }

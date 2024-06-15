@@ -1,8 +1,16 @@
 import { DateTime } from 'luxon'
-import { BaseModel, afterFind, afterPaginate, belongsTo, column } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  afterFind,
+  afterPaginate,
+  belongsTo,
+  column,
+  hasMany,
+} from '@adonisjs/lucid/orm'
 import UploadFile from './upload_file.js'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import PoiType from './poi_type.js'
+import Post from './post.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -47,6 +55,11 @@ export default class Poi extends BaseModel {
     foreignKey: 'typeId',
   })
   declare type: BelongsTo<typeof PoiType>
+
+  @hasMany(() => Post, {
+    foreignKey: 'poiId',
+  })
+  declare posts: HasMany<typeof Post>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

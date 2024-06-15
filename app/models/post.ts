@@ -1,9 +1,17 @@
 import { DateTime } from 'luxon'
-import { BaseModel, afterFind, afterPaginate, belongsTo, column } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  afterFind,
+  afterPaginate,
+  belongsTo,
+  column,
+  hasMany,
+} from '@adonisjs/lucid/orm'
 import User from './user.js'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import UploadFile from './upload_file.js'
 import Poi from './poi.js'
+import Comment from './comment.js'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -38,6 +46,11 @@ export default class Post extends BaseModel {
 
   @column()
   declare note: number
+
+  @hasMany(() => Comment, {
+    foreignKey: 'postId',
+  })
+  declare comments: HasMany<typeof Comment>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

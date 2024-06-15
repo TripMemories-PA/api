@@ -8,6 +8,7 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const CommentController = () => import('#controllers/comment_controller')
 const PostController = () => import('#controllers/post_controller')
 const PoiController = () => import('#controllers/poi_controller')
 const AuthController = () => import('#controllers/auth_controller')
@@ -81,6 +82,15 @@ router
     router.post('/image', [PostController, 'storeImage'])
     router.get('/:id', [PostController, 'show'])
     router.delete('/:id', [PostController, 'delete'])
+    router.get('/:id/comments', [PostController, 'indexComments'])
   })
   .prefix('posts')
+  .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.post('', [CommentController, 'store'])
+    router.delete('/:id', [CommentController, 'delete'])
+  })
+  .prefix('comments')
   .middleware(middleware.auth())
