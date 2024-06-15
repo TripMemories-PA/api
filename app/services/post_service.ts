@@ -5,6 +5,8 @@ import { IndexPostRequest } from '../types/requests/post/index_post_request.js'
 import AuthService from './auth_service.js'
 import { Exception } from '@adonisjs/core/exceptions'
 import FileService from './file_service.js'
+import Poi from '#models/poi'
+import User from '#models/user'
 
 @inject()
 export default class PostService {
@@ -14,15 +16,21 @@ export default class PostService {
   ) {}
 
   async indexPoiPosts(poiId: number, payload: IndexPostRequest) {
-    return await Post.query()
-      .where('poiId', poiId)
+    const poi = await Poi.query().where('id', poiId).firstOrFail()
+
+    return await poi
+      .related('posts')
+      .query()
       .orderBy('created_at', 'desc')
       .paginate(payload.page, payload.perPage)
   }
 
   async indexUserPosts(userId: number, payload: IndexPostRequest) {
-    return await Post.query()
-      .where('createdById', userId)
+    const user = await User.query().where('id', userId).firstOrFail()
+
+    return await user
+      .related('posts')
+      .query()
       .orderBy('created_at', 'desc')
       .paginate(payload.page, payload.perPage)
   }

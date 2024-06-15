@@ -8,6 +8,7 @@ export default class extends BaseSeeder {
     const countSentFriendRequests = 3
     const countReceivedFriendRequests = 3
     const countPosts = 3
+    const countComments = 3
     const defaultPassword = 'Test1234!'
 
     for (let i = 1; i <= countUser; i++) {
@@ -20,7 +21,9 @@ export default class extends BaseSeeder {
         .with('banner')
         .with('sentFriendRequests', countSentFriendRequests)
         .with('receivedFriendRequests', countReceivedFriendRequests)
-        .with('posts', countPosts)
+        .with('posts', countPosts, (post) => {
+          post.with('comments', countComments)
+        })
         .with('friends', countFriends, (friend) => {
           friend.with('avatar').with('banner').merge({
             password: defaultPassword,

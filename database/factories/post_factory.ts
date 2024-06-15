@@ -1,6 +1,7 @@
 import factory from '@adonisjs/lucid/factories'
 import Post from '#models/post'
 import { PostImageFactory } from './post_image_factory.js'
+import { CommentFactory } from './comment_factory.js'
 
 export const PostFactory = factory
   .define(Post, async ({ faker }) => {
@@ -8,7 +9,7 @@ export const PostFactory = factory
 
     return {
       createdById: faker.number.int(),
-      poiId: 3407,
+      poiId: 3407, // Arc de Triomphe
       imageId: image.id,
       content: faker.lorem.paragraph(),
       note: faker.number.float({
@@ -18,4 +19,5 @@ export const PostFactory = factory
       }),
     }
   })
+  .relation('comments', () => CommentFactory)
   .build()
