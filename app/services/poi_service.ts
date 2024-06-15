@@ -13,6 +13,12 @@ export default class PoiService {
       })
     }
 
+    if (payload.swLat && payload.swLng && payload.neLat && payload.neLng) {
+      query
+        .whereBetween('latitude', [payload.swLat, payload.neLat])
+        .whereBetween('longitude', [payload.swLng, payload.neLng])
+    }
+
     return await query.paginate(payload.page, payload.perPage)
   }
 
