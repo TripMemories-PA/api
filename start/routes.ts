@@ -78,6 +78,7 @@ router
 
 router
   .group(() => {
+    router.get('', [PostController, 'index'])
     router.post('', [PostController, 'store'])
     router.post('/image', [PostController, 'storeImage'])
     router.get('/:id', [PostController, 'show'])
