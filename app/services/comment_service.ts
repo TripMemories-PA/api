@@ -12,7 +12,11 @@ export default class CommentService {
   async indexPostComments(postId: number, payload: any) {
     const post = await Post.query().where('id', postId).firstOrFail()
 
-    return await post.related('comments').query().paginate(payload.page, payload.perPage)
+    return await post
+      .related('comments')
+      .query()
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
   }
 
   async store(createdById: number, payload: StoreCommentRequest) {

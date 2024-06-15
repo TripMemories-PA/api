@@ -1,11 +1,15 @@
 import CommentService from '#services/comment_service'
+import LikeService from '#services/like_service'
 import { storeCommentValidator } from '#validators/comment/store_comment_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class CommentController {
-  constructor(protected commentService: CommentService) {}
+  constructor(
+    protected commentService: CommentService,
+    protected likeService: LikeService
+  ) {}
 
   async store({ request, response, auth }: HttpContext) {
     const payload = await request.validateUsing(storeCommentValidator)
@@ -18,6 +22,18 @@ export default class CommentController {
 
   async delete({ response, params }: HttpContext) {
     await this.commentService.delete(params.id)
+
+    return response.noContent()
+  }
+
+  async like({ response, auth, params }: HttpContext) {
+    await this.likeService.likeComment(auth.user!.id, params.id)
+
+    return response.noContent()
+  }
+
+  async unlike({ response, auth, params }: HttpContext) {
+    await this.likeService.unlikeComment(auth.user!.id, params.id)
 
     return response.noContent()
   }

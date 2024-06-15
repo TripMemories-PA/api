@@ -83,6 +83,8 @@ router
     router.get('/:id', [PostController, 'show'])
     router.delete('/:id', [PostController, 'delete'])
     router.get('/:id/comments', [PostController, 'indexComments'])
+    router.post('/:id/like', [PostController, 'like'])
+    router.delete('/:id/like', [PostController, 'unlike'])
   })
   .prefix('posts')
   .middleware(middleware.auth())
@@ -91,6 +93,8 @@ router
   .group(() => {
     router.post('', [CommentController, 'store'])
     router.delete('/:id', [CommentController, 'delete'])
+    router.post('/:id/like', [CommentController, 'like'])
+    router.delete('/:id/like', [CommentController, 'unlike'])
   })
   .prefix('comments')
   .middleware(middleware.auth())
