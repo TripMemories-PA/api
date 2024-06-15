@@ -17,12 +17,14 @@ const UserController = () => import('#controllers/user_controller')
 const FriendController = () => import('#controllers/friend_controller')
 const FriendRequestController = () => import('#controllers/friend_request_controller')
 
+// HEALTH CHECK
 router.get('/', async () => {
   return {
     hello: 'world',
   }
 })
 
+// AUTH
 router
   .group(() => {
     router.post('/register', [AuthController, 'register'])
@@ -30,6 +32,7 @@ router
   })
   .prefix('auth')
 
+// ME
 router
   .group(() => {
     router.get('', [MeController, 'show'])
@@ -58,16 +61,23 @@ router
   .prefix('me')
   .middleware(middleware.auth())
 
+// USERS
 router
   .group(() => {
     router.get('', [UserController, 'index'])
+  })
+  .prefix('users')
+  .middleware(middleware.auth())
+
+router
+  .group(() => {
     router.get('/:id', [UserController, 'show'])
     router.get('/:id/friends', [FriendController, 'indexFriends'])
     router.get('/:id/posts', [UserController, 'indexPosts'])
   })
   .prefix('users')
-  .middleware(middleware.auth())
 
+// POIS
 router
   .group(() => {
     router.get('', [PoiController, 'index'])
@@ -76,20 +86,27 @@ router
   })
   .prefix('pois')
 
+// POSTS
 router
   .group(() => {
     router.get('', [PostController, 'index'])
+    router.get('/:id', [PostController, 'show'])
+    router.get('/:id/comments', [PostController, 'indexComments'])
+  })
+  .prefix('posts')
+
+router
+  .group(() => {
     router.post('', [PostController, 'store'])
     router.post('/image', [PostController, 'storeImage'])
-    router.get('/:id', [PostController, 'show'])
     router.delete('/:id', [PostController, 'delete'])
-    router.get('/:id/comments', [PostController, 'indexComments'])
     router.post('/:id/like', [PostController, 'like'])
     router.delete('/:id/like', [PostController, 'unlike'])
   })
   .prefix('posts')
   .middleware(middleware.auth())
 
+// COMMENTS
 router
   .group(() => {
     router.post('', [CommentController, 'store'])
