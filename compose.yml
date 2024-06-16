@@ -34,6 +34,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
+      sleep 5;
       /usr/bin/mc alias set myminio http://minio:${MINIO_PORT} root ${MINIO_ROOT_PASSWORD};
       /usr/bin/mc mb myminio/${MINIO_BUCKET_NAME};
       /usr/bin/mc admin user svcacct add --access-key=${MINIO_ACCESS_KEY} --secret-key=${MINIO_SECRET_KEY} myminio root;
