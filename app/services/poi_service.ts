@@ -21,7 +21,7 @@ export default class PoiService {
 
     if (payload.sortBy && payload.order) {
       const order = payload.order === 'asc' ? 'asc' : 'desc'
-      query.orderBy(payload.sortBy, order)
+      query.orderByRaw(`${payload.sortBy} COLLATE UNICODE ${order}`)
     }
 
     return await query.paginate(payload.page, payload.perPage)
