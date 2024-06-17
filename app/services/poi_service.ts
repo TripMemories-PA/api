@@ -19,6 +19,11 @@ export default class PoiService {
         .whereBetween('longitude', [payload.swLng, payload.neLng])
     }
 
+    if (payload.sortBy && payload.order) {
+      const order = payload.order === 'asc' ? 'asc' : 'desc'
+      query.orderByRaw(`${payload.sortBy} COLLATE UNICODE ${order}`)
+    }
+
     return await query.paginate(payload.page, payload.perPage)
   }
 
