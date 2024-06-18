@@ -1,4 +1,5 @@
 import Poi from '#models/poi'
+import db from '@adonisjs/lucid/services/db'
 import { IndexPoiRequest } from '../types/requests/poi/index_poi_request.js'
 
 export default class PoiService {
@@ -17,6 +18,21 @@ export default class PoiService {
       query
         .whereBetween('latitude', [payload.swLat, payload.neLat])
         .whereBetween('longitude', [payload.swLng, payload.neLng])
+    }
+
+    if (payload.lat && payload.lng && payload.radius) {
+      query
+        .select(
+          db.raw(
+            '*, ST_Distance(ST_Point(?, ?), ST_Point(longitude, latitude)) / 1000 as distance',
+            [payload.lng, payload.lat]
+          )
+        )
+        .whereRaw(
+          'ST_DWithin(ST_Point(longitude, latitude)::geography, ST_Point(?, ?)::geography, ?)',
+          [payload.lng, payload.lat, payload.radius * 1000]
+        )
+        .orderBy('distance', 'asc')
     }
 
     if (payload.sortBy && payload.order) {
