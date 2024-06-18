@@ -20,11 +20,6 @@ export default class PoiService {
         .whereBetween('longitude', [payload.swLng, payload.neLng])
     }
 
-    if (payload.sortBy && payload.order) {
-      const order = payload.order === 'asc' ? 'asc' : 'desc'
-      query.orderByRaw(`${payload.sortBy} COLLATE UNICODE ${order}`)
-    }
-
     if (payload.lat && payload.lng && payload.radius) {
       query
         .select(
@@ -38,6 +33,11 @@ export default class PoiService {
           [payload.lng, payload.lat, payload.radius * 1000]
         )
         .orderBy('distance', 'asc')
+    }
+
+    if (payload.sortBy && payload.order) {
+      const order = payload.order === 'asc' ? 'asc' : 'desc'
+      query.orderByRaw(`${payload.sortBy} COLLATE UNICODE ${order}`)
     }
 
     return await query.paginate(payload.page, payload.perPage)
