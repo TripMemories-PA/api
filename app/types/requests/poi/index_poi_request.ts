@@ -8,4 +8,7 @@ export interface IndexPoiRequest extends PaginateRequest {
   swLng?: number
   neLat?: number
   neLng?: number
+  lat?: number
+  lng?: number
+  radius?: number
 }
