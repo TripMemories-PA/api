@@ -100,6 +100,10 @@ export default class Post extends BaseModel {
         createdBy.preload('avatar')
       })
       loader.load('image')
+      loader.load('poi', (poi) => {
+        poi.preload('cover')
+        poi.preload('type')
+      })
     })
   }
 
