@@ -13,6 +13,7 @@ export default class extends BaseSchema {
         .inTable('users')
         .onDelete('CASCADE')
       table.integer('poi_id').unsigned().references('id').inTable('pois').onDelete('CASCADE')
+      table.string('title').notNullable()
       table.text('content').notNullable()
       table.decimal('note', 2, 1).notNullable()
       table.integer('image_id').unsigned().references('id').inTable('upload_files')

@@ -47,6 +47,9 @@ export default class Post extends BaseModel {
   declare content: string
 
   @column()
+  declare title: string
+
+  @column()
   declare note: number
 
   @hasMany(() => Comment, {

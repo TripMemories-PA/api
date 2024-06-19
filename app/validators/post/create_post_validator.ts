@@ -4,6 +4,7 @@ import vine from '@vinejs/vine'
 
 export const createPostValidator = vine.compile(
   vine.object({
+    title: vine.string().maxLength(100),
     content: vine.string().maxLength(500),
     imageId: vine.number().exists(async (_, value) => {
       const image = await UploadFile.query().where('id', value).first()
