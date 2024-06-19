@@ -45,6 +45,7 @@ export default class PostService {
 
   async create(userId: number, payload: CreatePostRequest) {
     return await Post.create({
+      title: payload.title,
       createdById: userId,
       poiId: payload.poiId,
       content: payload.content,

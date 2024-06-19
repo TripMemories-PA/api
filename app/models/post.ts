@@ -47,6 +47,9 @@ export default class Post extends BaseModel {
   declare content: string
 
   @column()
+  declare title: string
+
+  @column()
   declare note: number
 
   @hasMany(() => Comment, {
@@ -100,6 +103,10 @@ export default class Post extends BaseModel {
         createdBy.preload('avatar')
       })
       loader.load('image')
+      loader.load('poi', (poi) => {
+        poi.preload('cover')
+        poi.preload('type')
+      })
     })
   }
 

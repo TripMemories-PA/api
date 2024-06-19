@@ -65,17 +65,12 @@ router
 router
   .group(() => {
     router.get('', [UserController, 'index'])
-  })
-  .prefix('users')
-  .middleware(middleware.auth())
-
-router
-  .group(() => {
     router.get('/:id', [UserController, 'show'])
     router.get('/:id/friends', [FriendController, 'indexFriends'])
     router.get('/:id/posts', [UserController, 'indexPosts'])
   })
   .prefix('users')
+  .middleware(middleware.public())
 
 // POIS
 router
@@ -85,6 +80,7 @@ router
     router.get('/:id/posts', [PoiController, 'indexPosts'])
   })
   .prefix('pois')
+  .middleware(middleware.public())
 
 // POSTS
 router
@@ -94,6 +90,7 @@ router
     router.get('/:id/comments', [PostController, 'indexComments'])
   })
   .prefix('posts')
+  .middleware(middleware.public())
 
 router
   .group(() => {
