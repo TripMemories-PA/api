@@ -25,9 +25,12 @@ export default class UserService {
       })
     }
 
-    const authUser = this.authService.getAuthenticatedUser()
+    try {
+      const authUser = this.authService.getAuthenticatedUser()
+      query.whereNot('id', authUser.id)
+    } catch {}
 
-    return await query.whereNot('id', authUser.id).paginate(request.page, request.perPage)
+    return await query.paginate(request.page, request.perPage)
   }
 
   async show(id: number) {
