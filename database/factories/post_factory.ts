@@ -12,7 +12,7 @@ export const PostFactory = factory
       poiId: 3407, // Arc de Triomphe
       imageId: image.id,
       content: faker.lorem.paragraph(),
-      title: faker.lorem.sentence(),
+      title: faker.lorem.words({ min: 3, max: 4 }),
       note: faker.number.float({
         min: 0,
         max: 5,
