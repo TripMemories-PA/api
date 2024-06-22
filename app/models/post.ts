@@ -50,6 +50,9 @@ export default class Post extends BaseModel {
   declare title: string
 
   @column()
+  declare cityId: number
+
+  @column()
   declare note: number
 
   @hasMany(() => Comment, {

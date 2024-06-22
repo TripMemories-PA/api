@@ -2,6 +2,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import db from '@adonisjs/lucid/services/db'
 import { PoiTypes } from '../../app/types/models/poi_types.js'
 import env from '#start/env'
+import City from '#models/city'
 
 export default class extends BaseSeeder {
   async run() {
@@ -76,6 +77,16 @@ export default class extends BaseSeeder {
         const poiType = this.getTypes().find((type: any) => types.includes(type.name))
         const name = item.rdfs_label[0].value
 
+        const city = await City.updateOrCreate(
+          {
+            zipCode: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+          },
+          {
+            name: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
+            zipCode: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+          }
+        )
+
         return {
           name: this.areAllLettersCapital(name) ? this.capitalizeFirstLetter(name) : name,
           cover_id: coverId,
@@ -84,8 +95,7 @@ export default class extends BaseSeeder {
           description: item.hasDescription[0].shortDescription[0].value,
           latitude: item.isLocatedAt[0].schema_geo[0].schema_latitude[0],
           longitude: item.isLocatedAt[0].schema_geo[0].schema_longitude[0],
-          city: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
-          zip_code: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+          city_id: city.id,
           address: streetAddress ? streetAddress[0] : null,
           updated_at: now,
           created_at: now,
