@@ -12,9 +12,9 @@ export default class PoiService {
 
     if (payload.search) {
       query.where((builder) => {
-        builder
-          .where('name', 'ilike', `%${payload.search}%`)
-          .orWhere('city', 'ilike', `%${payload.search}%`)
+        builder.where('name', 'ilike', `%${payload.search}%`).orWhereHas('city', (city) => {
+          city.where('name', 'ilike', `%${payload.search}%`)
+        })
       })
     }
 
