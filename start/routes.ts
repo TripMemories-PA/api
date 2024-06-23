@@ -119,7 +119,6 @@ router
 router
   .group(() => {
     router.get('', [CityController, 'index'])
-
     router.get('/:id/pois', [CityController, 'indexCityPois'])
   })
   .prefix('cities')
