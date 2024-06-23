@@ -63,7 +63,6 @@ export default class extends BaseSeeder {
     return await Promise.all(
       pois.results.map(async (item: any) => {
         const now = new Date()
-
         const representations = item.hasRepresentation
         const coverId = await this.getCoverId(representations)
 
@@ -77,15 +76,27 @@ export default class extends BaseSeeder {
         const poiType = this.getTypes().find((type: any) => types.includes(type.name))
         const name = item.rdfs_label[0].value
 
-        const city = await City.updateOrCreate(
-          {
-            zipCode: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
-          },
-          {
-            name: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
-            zipCode: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+        const cityData = {
+          zipCode: item.isLocatedAt[0].schema_address[0].schema_postalCode[0],
+          name: item.isLocatedAt[0].schema_address[0].schema_addressLocality[0],
+          coverId: coverId,
+        }
+
+        let city
+
+        try {
+          city = await City.findBy('zipCode', cityData.zipCode)
+
+          if (!city) {
+            city = await City.create(cityData)
           }
-        )
+        } catch (error) {
+          city = await City.findBy('zipCode', cityData.zipCode)
+        }
+
+        if (!city) {
+          throw new Error('Error while creating city')
+        }
 
         return {
           name: this.areAllLettersCapital(name) ? this.capitalizeFirstLetter(name) : name,

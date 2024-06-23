@@ -7,8 +7,8 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('name').notNullable()
-      table.string('zip_code').notNullable()
-
+      table.string('zip_code').notNullable().unique()
+      table.integer('cover_id').unsigned().references('upload_files.id').notNullable()
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
