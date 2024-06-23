@@ -85,10 +85,10 @@ export default class Poi extends BaseModel {
     const notes = posts.map((post) => Number(post.note))
     if (notes.length === 0) {
       poi.averageNote = undefined
-      return
+    } else {
+      const averageNote = notes.reduce((acc, note) => acc + note, 0) / notes.length
+      poi.averageNote = Math.round(averageNote * 10) / 10
     }
-    const averageNote = notes.reduce((acc, note) => acc + note, 0) / notes.length
-    poi.averageNote = Math.round(averageNote * 10) / 10
 
     await poi.load((loader) => {
       loader.load('cover')
