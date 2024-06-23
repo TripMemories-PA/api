@@ -5,6 +5,7 @@ import {
   afterPaginate,
   belongsTo,
   column,
+  computed,
   hasMany,
 } from '@adonisjs/lucid/orm'
 import UploadFile from './upload_file.js'
@@ -70,8 +71,25 @@ export default class Poi extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @computed()
+  declare postsCount: number | undefined
+
+  @computed()
+  declare averageNote: number | undefined
+
   @afterFind()
   static async loadPoiRelations(poi: Poi) {
+    const posts = await poi.related('posts').query()
+    poi.postsCount = posts.length
+
+    const notes = posts.map((post) => Number(post.note))
+    if (notes.length === 0) {
+      poi.averageNote = undefined
+      return
+    }
+    const averageNote = notes.reduce((acc, note) => acc + note, 0) / notes.length
+    poi.averageNote = Math.round(averageNote * 10) / 10
+
     await poi.load((loader) => {
       loader.load('cover')
       loader.load('type')
