@@ -11,6 +11,7 @@ import UploadFile from './upload_file.js'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import PoiType from './poi_type.js'
 import Post from './post.js'
+import City from './city.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -37,10 +38,12 @@ export default class Poi extends BaseModel {
   declare longitude: number
 
   @column()
-  declare city: string
+  declare cityId: number
 
-  @column()
-  declare zipCode: string
+  @belongsTo(() => City, {
+    foreignKey: 'cityId',
+  })
+  declare city: BelongsTo<typeof City>
 
   @column()
   declare address: string
@@ -72,6 +75,7 @@ export default class Poi extends BaseModel {
     await poi.load((loader) => {
       loader.load('cover')
       loader.load('type')
+      loader.load('city')
     })
   }
 

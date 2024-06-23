@@ -50,6 +50,9 @@ export default class Post extends BaseModel {
   declare title: string
 
   @column()
+  declare cityId: number
+
+  @column()
   declare note: number
 
   @hasMany(() => Comment, {
@@ -106,6 +109,7 @@ export default class Post extends BaseModel {
       loader.load('poi', (poi) => {
         poi.preload('cover')
         poi.preload('type')
+        poi.preload('city')
       })
     })
   }

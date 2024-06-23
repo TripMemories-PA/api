@@ -11,4 +11,5 @@ export interface IndexPoiRequest extends PaginateRequest {
   lat?: number
   lng?: number
   radius?: number
+  cityId?: number
 }
