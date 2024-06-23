@@ -93,6 +93,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @computed()
   declare hasReceivedFriendRequest: boolean | undefined
 
+  @computed()
+  declare poisCount: number | undefined
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -103,12 +106,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @afterFind()
   static async loadUserRelations(user: User) {
-    try {
-      await user.load((loader) => {
-        loader.load('avatar')
-        loader.load('banner')
-      })
+    await user.load((loader) => {
+      loader.load('avatar')
+      loader.load('banner')
+    })
 
+    const distinctPois = await user.related('posts').query().distinct('poi_id')
+    user.poisCount = distinctPois.length
+
+    try {
       const ctx = HttpContext.getOrFail()
       const currentUser = ctx.auth.user
 
