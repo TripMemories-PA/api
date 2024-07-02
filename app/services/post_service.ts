@@ -54,6 +54,16 @@ export default class PostService {
       .paginate(payload.page, payload.perPage)
   }
 
+  async indexCityPosts(cityId: number, payload: IndexPostRequest) {
+    const pois = await Poi.query().where('cityId', cityId)
+    const poiIds = pois.map((poi) => poi.id)
+
+    return await Post.query()
+      .whereIn('poiId', poiIds)
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
+  }
+
   async index(payload: IndexPostRequest) {
     return await Post.query().orderBy('created_at', 'desc').paginate(payload.page, payload.perPage)
   }

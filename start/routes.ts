@@ -121,6 +121,7 @@ router
   .group(() => {
     router.get('', [CityController, 'index'])
     router.get('/:id/pois', [CityController, 'indexCityPois'])
+    router.get('/:id/posts', [CityController, 'indexCityPosts'])
   })
   .prefix('cities')
   .middleware(middleware.public())
