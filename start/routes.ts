@@ -33,6 +33,13 @@ router
   })
   .prefix('auth')
 
+router
+  .group(() => {
+    router.post('/refresh', [AuthController, 'refresh'])
+  })
+  .prefix('auth')
+  .middleware(middleware.auth())
+
 // ME
 router
   .group(() => {

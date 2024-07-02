@@ -19,7 +19,7 @@ export default class AuthService {
   async login(payload: LoginRequest) {
     const user = await User.verifyCredentials(payload.login, payload.password)
 
-    return await User.accessTokens.create(user, ['*'], { expiresIn: '1 hour' })
+    return await User.accessTokens.create(user, ['*'], { expiresIn: '7 day' })
   }
 
   getAuthenticatedUser() {
@@ -30,5 +30,11 @@ export default class AuthService {
     }
 
     return context.auth.user
+  }
+
+  async refresh(userId: number) {
+    const user = await User.findOrFail(userId)
+
+    return await User.accessTokens.create(user, ['*'], { expiresIn: '7 day' })
   }
 }
