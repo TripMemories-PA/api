@@ -42,10 +42,10 @@ export default class UserService {
     const user = await User.findOrFail(userId)
 
     user.merge({
-      username: payload.username,
-      email: payload.email,
-      firstname: payload.firstname,
-      lastname: payload.lastname,
+      username: payload.username ?? user.username,
+      email: payload.email ?? user.email,
+      firstname: payload.firstname ?? user.firstname,
+      lastname: payload.lastname ?? user.lastname,
     })
 
     return await user.save()
