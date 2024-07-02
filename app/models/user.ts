@@ -18,6 +18,7 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import FriendRequest from './friend_request.js'
 import { HttpContext } from '@adonisjs/core/http'
 import Post from './post.js'
+import UserType from './user_type.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -42,6 +43,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare lastname: string
+
+  @column()
+  declare userTypeId: number
+
+  @belongsTo(() => UserType, {
+    foreignKey: 'userTypeId',
+  })
+  declare userType: BelongsTo<typeof UserType>
 
   @column()
   declare avatarId: number
@@ -109,6 +118,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     await user.load((loader) => {
       loader.load('avatar')
       loader.load('banner')
+      loader.load('userType')
     })
 
     const distinctPois = await user.related('posts').query().distinct('poi_id')

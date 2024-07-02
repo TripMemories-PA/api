@@ -28,6 +28,7 @@ export default class FriendRequest extends BaseModel {
   static async loadFriendRequestRelations(request: FriendRequest) {
     await request.load('sender', (sender) => {
       sender.preload('avatar')
+      sender.preload('userType')
     })
   }
 

@@ -104,6 +104,7 @@ export default class Post extends BaseModel {
     await post.load((loader) => {
       loader.load('createdBy', (createdBy) => {
         createdBy.preload('avatar')
+        createdBy.preload('userType')
       })
       loader.load('image')
       loader.load('poi', (poi) => {

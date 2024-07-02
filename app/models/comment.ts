@@ -64,6 +64,7 @@ export default class Comment extends BaseModel {
     await comment.load((loader) => {
       loader.load('createdBy', (createdBy) => {
         createdBy.preload('avatar')
+        createdBy.preload('userType')
       })
     })
   }

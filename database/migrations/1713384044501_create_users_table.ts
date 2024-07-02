@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string('password').notNullable()
       table.string('firstname').notNullable()
       table.string('lastname').notNullable()
+      table.integer('user_type_id').unsigned().notNullable().references('id').inTable('user_types')
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()

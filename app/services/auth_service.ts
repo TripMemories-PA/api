@@ -2,6 +2,7 @@ import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
 import { LoginRequest } from '../types/requests/auth/login_request.js'
 import { RegisterRequest } from '../types/requests/auth/register_request.js'
+import { UserTypes } from '../types/models/user_types.js'
 
 export default class AuthService {
   async register(payload: RegisterRequest) {
@@ -11,6 +12,7 @@ export default class AuthService {
       password: payload.password,
       firstname: payload.firstname,
       lastname: payload.lastname,
+      userTypeId: UserTypes.USER,
     })
   }
 

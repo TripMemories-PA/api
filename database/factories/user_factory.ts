@@ -5,6 +5,7 @@ import { BannerFactory } from './banner_factory.js'
 import { SentFriendRequestFactory } from './sent_friend_request_factory.js'
 import { ReceivedFriendRequestFactory } from './received_friend_request_factory.js'
 import { PostFactory } from './post_factory.js'
+import { UserTypes } from '../../app/types/models/user_types.js'
 
 export const UserFactory = factory
   .define(User, async ({ faker }) => {
@@ -14,6 +15,7 @@ export const UserFactory = factory
       password: faker.internet.password(),
       firstname: faker.person.firstName(),
       lastname: faker.person.lastName(),
+      userTypeId: UserTypes.USER,
     }
   })
   .relation('avatar', () => AvatarFactory)
