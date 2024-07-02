@@ -56,6 +56,7 @@ router
       .group(() => {
         router.get('', [FriendController, 'indexMyFriends'])
         router.delete('/:id', [FriendController, 'delete'])
+        router.get('/posts', [FriendController, 'indexMyFriendsPosts'])
       })
       .prefix('/friends')
   })

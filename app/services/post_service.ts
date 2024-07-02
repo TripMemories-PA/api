@@ -39,6 +39,21 @@ export default class PostService {
       .paginate(payload.page, payload.perPage)
   }
 
+  async indexUserFriendsPosts(userId: number, payload: IndexPostRequest) {
+    const user = await User.query()
+      .where('id', userId)
+      .where('userTypeId', UserTypes.USER)
+      .firstOrFail()
+
+    const userFriends = await user.related('friends').query()
+    const friendsIds = userFriends.map((friend) => friend.id)
+
+    return await Post.query()
+      .whereIn('createdById', friendsIds)
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
+  }
+
   async index(payload: IndexPostRequest) {
     return await Post.query().orderBy('created_at', 'desc').paginate(payload.page, payload.perPage)
   }
