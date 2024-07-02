@@ -43,10 +43,10 @@ export default class Comment extends BaseModel {
   declare updatedAt: DateTime
 
   @computed()
-  declare likesCount: number | undefined
+  declare likesCount: number | null
 
   @computed()
-  declare isLiked: boolean | undefined
+  declare isLiked: boolean | null
 
   @afterFind()
   static async loadCommentRelations(comment: Comment) {
@@ -58,7 +58,7 @@ export default class Comment extends BaseModel {
       const userId = httpContext.auth.user?.id
       comment.isLiked = likes.some((like) => like.userId === userId)
     } catch {
-      comment.isLiked = undefined
+      comment.isLiked = null
     }
 
     await comment.load((loader) => {

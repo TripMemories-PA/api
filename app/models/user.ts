@@ -94,16 +94,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare posts: HasMany<typeof Post>
 
   @computed()
-  declare isFriend: boolean | undefined
+  declare isFriend: boolean | null
 
   @computed()
-  declare hasSentFriendRequest: boolean | undefined
+  declare hasSentFriendRequest: boolean | null
 
   @computed()
-  declare hasReceivedFriendRequest: boolean | undefined
+  declare hasReceivedFriendRequest: boolean | null
 
   @computed()
-  declare poisCount: number | undefined
+  declare poisCount: number | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -129,9 +129,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
       const currentUser = ctx.auth.user
 
       if (!currentUser || currentUser.id === user.id) {
-        user.isFriend = undefined
-        user.hasSentFriendRequest = undefined
-        user.hasReceivedFriendRequest = undefined
+        user.isFriend = null
+        user.hasSentFriendRequest = null
+        user.hasReceivedFriendRequest = null
         return
       }
 
@@ -158,9 +158,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
       user.hasSentFriendRequest = !!sentFriendRequest
       user.hasReceivedFriendRequest = !!receivedFriendRequest
     } catch {
-      user.isFriend = undefined
-      user.hasSentFriendRequest = undefined
-      user.hasReceivedFriendRequest = undefined
+      user.isFriend = null
+      user.hasSentFriendRequest = null
+      user.hasReceivedFriendRequest = null
     }
   }
 
