@@ -14,12 +14,18 @@ export default class FileService {
     const port = env.get('MINIO_PORT')
     const hostname = env.get('MINIO_HOST')
 
-    this.baseUrl = 'http://' + hostname + ':' + port + '/' + this.bucketName
+    this.baseUrl =
+      (port === 443 ? 'https' : 'http') +
+      '://' +
+      hostname +
+      (port === 443 || port === 80 ? '' : ':' + port) +
+      '/' +
+      this.bucketName
 
     this.client = new Minio.Client({
       endPoint: hostname,
       port: port,
-      useSSL: false,
+      useSSL: port === 443,
       accessKey: env.get('MINIO_ACCESS_KEY'),
       secretKey: env.get('MINIO_SECRET_KEY'),
     })
