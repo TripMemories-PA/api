@@ -27,7 +27,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
-  DB_DATABASE: Env.schema.string(),
+  DB_DATABASE: Env.schema.enum(['postgres_dev', 'postgres_prod'] as const),
 
   /*
   |----------------------------------------------------------
@@ -38,7 +38,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   MINIO_PORT: Env.schema.number(),
   MINIO_ACCESS_KEY: Env.schema.string(),
   MINIO_SECRET_KEY: Env.schema.string(),
-  MINIO_BUCKET_NAME: Env.schema.string(),
+  MINIO_BUCKET_NAME: Env.schema.enum(['dev', 'prod'] as const),
 
   GRAPHQL_ENDPOINT: Env.schema.string(),
 })
