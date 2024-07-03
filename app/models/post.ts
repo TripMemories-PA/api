@@ -77,13 +77,13 @@ export default class Post extends BaseModel {
   declare updatedAt: DateTime
 
   @column()
-  declare isLiked: boolean | undefined
+  declare isLiked: boolean | null
 
   @column()
-  declare likesCount: number | undefined
+  declare likesCount: number | null
 
   @column()
-  declare commentsCount: number | undefined
+  declare commentsCount: number | null
 
   @afterFind()
   static async loadPostRelations(post: Post) {
@@ -98,12 +98,13 @@ export default class Post extends BaseModel {
       const userId = httpContext.auth.user?.id
       post.isLiked = likes.some((like) => like.userId === userId)
     } catch {
-      post.isLiked = undefined
+      post.isLiked = null
     }
 
     await post.load((loader) => {
       loader.load('createdBy', (createdBy) => {
         createdBy.preload('avatar')
+        createdBy.preload('userType')
       })
       loader.load('image')
       loader.load('poi', (poi) => {

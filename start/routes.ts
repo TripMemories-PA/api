@@ -33,6 +33,13 @@ router
   })
   .prefix('auth')
 
+router
+  .group(() => {
+    router.post('/refresh', [AuthController, 'refresh'])
+  })
+  .prefix('auth')
+  .middleware(middleware.auth())
+
 // ME
 router
   .group(() => {
@@ -56,6 +63,7 @@ router
       .group(() => {
         router.get('', [FriendController, 'indexMyFriends'])
         router.delete('/:id', [FriendController, 'delete'])
+        router.get('/posts', [FriendController, 'indexMyFriendsPosts'])
       })
       .prefix('/friends')
   })
@@ -120,6 +128,7 @@ router
   .group(() => {
     router.get('', [CityController, 'index'])
     router.get('/:id/pois', [CityController, 'indexCityPois'])
+    router.get('/:id/posts', [CityController, 'indexCityPosts'])
   })
   .prefix('cities')
   .middleware(middleware.public())

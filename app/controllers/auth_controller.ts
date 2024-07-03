@@ -27,4 +27,14 @@ export default class AuthController {
       expiresAt: token.expiresAt,
     })
   }
+
+  async refresh({ response, auth }: HttpContext) {
+    const token = await this.authService.refresh(auth.user!.id)
+
+    return response.ok({
+      type: 'bearer',
+      token: token.value?.release(),
+      expiresAt: token.expiresAt,
+    })
+  }
 }

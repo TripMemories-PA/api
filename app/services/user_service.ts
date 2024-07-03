@@ -5,6 +5,7 @@ import { UpdateUserRequest } from '../types/requests/user/update_user_request.js
 import AuthService from './auth_service.js'
 import FileService from './file_service.js'
 import { inject } from '@adonisjs/core'
+import { UserTypes } from '../types/models/user_types.js'
 
 @inject()
 export default class UserService {
@@ -14,7 +15,7 @@ export default class UserService {
   ) {}
 
   async index(request: IndexUserRequest) {
-    const query = User.query()
+    const query = User.query().where('userTypeId', UserTypes.USER)
 
     if (request.search) {
       query.where((builder) => {
@@ -41,10 +42,10 @@ export default class UserService {
     const user = await User.findOrFail(userId)
 
     user.merge({
-      username: payload.username,
-      email: payload.email,
-      firstname: payload.firstname,
-      lastname: payload.lastname,
+      username: payload.username ?? user.username,
+      email: payload.email ?? user.email,
+      firstname: payload.firstname ?? user.firstname,
+      lastname: payload.lastname ?? user.lastname,
     })
 
     return await user.save()
