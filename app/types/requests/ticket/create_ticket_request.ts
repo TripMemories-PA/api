@@ -1,6 +1,6 @@
 export interface CreateTicketRequest {
   title: string
-  description: string
+  description: string | null
   quantity: number
   price: number
   groupSize: number

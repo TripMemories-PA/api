@@ -17,9 +17,18 @@ export default class AuthMiddleware {
     next: NextFn,
     options: {
       guards?: (keyof Authenticators)[]
+      userTypes?: number[]
     } = {}
   ) {
     await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
+
+    if (options.userTypes) {
+      const user = ctx.auth.user
+      if (!user || !options.userTypes.includes(user.userTypeId)) {
+        return ctx.response.unauthorized({ errors: [{ message: 'Invalid user type' }] })
+      }
+    }
+
     return next()
   }
 }

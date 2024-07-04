@@ -9,7 +9,7 @@ export default class Ticket extends BaseModel {
   declare title: string
 
   @column()
-  declare description: string
+  declare description: string | null
 
   @column()
   declare quantity: number

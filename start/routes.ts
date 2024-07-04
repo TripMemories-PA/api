@@ -8,6 +8,8 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import { args } from '@adonisjs/core/ace'
+import { UserTypes } from '../app/types/models/user_types.js'
 const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
 const CommentController = () => import('#controllers/comment_controller')
@@ -140,4 +142,4 @@ router
     router.post('', [TicketController, 'store'])
   })
   .prefix('tickets')
-  .middleware(middleware.auth())
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))
