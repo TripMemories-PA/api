@@ -15,7 +15,7 @@ export default class extends BaseSeeder {
       },
       {
         id: UserTypes.POI,
-        name: 'Poi',
+        name: 'Poi Owner',
       },
     ]
 

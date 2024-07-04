@@ -1,5 +1,6 @@
 import { UserFactory } from '#database/factories/user_factory'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
+import { UserTypes } from '../../app/types/models/user_types.js'
 
 export default class extends BaseSeeder {
   async run() {
@@ -10,6 +11,7 @@ export default class extends BaseSeeder {
     const countPosts = 3
     const countComments = 3
     const defaultPassword = 'Test1234!'
+    const defaultPoiId = 3407 // Arc de Triomphe
 
     for (let i = 1; i <= countUser; i++) {
       const user = await UserFactory.merge({
@@ -22,6 +24,9 @@ export default class extends BaseSeeder {
         .with('sentFriendRequests', countSentFriendRequests)
         .with('receivedFriendRequests', countReceivedFriendRequests)
         .with('posts', countPosts, (post) => {
+          post.merge({
+            poiId: defaultPoiId,
+          })
           post.with('comments', countComments)
         })
         .with('friends', countFriends, (friend) => {
@@ -37,5 +42,20 @@ export default class extends BaseSeeder {
         await friend.related('friends').attach([user.id])
       }
     }
+
+    await UserFactory.merge({
+      password: defaultPassword,
+      userTypeId: UserTypes.ADMIN,
+      username: 'admin',
+      email: 'admin@mail.com',
+    }).create()
+
+    await UserFactory.merge({
+      password: defaultPassword,
+      userTypeId: UserTypes.POI,
+      poiId: 3407, // Arc de Triomphe
+      username: 'poi',
+      email: 'poi@mail.com',
+    }).create()
   }
 }
