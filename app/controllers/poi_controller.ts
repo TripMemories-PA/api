@@ -1,5 +1,6 @@
 import PoiService from '#services/poi_service'
 import PostService from '#services/post_service'
+import TicketService from '#services/ticket_service'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
 import { inject } from '@adonisjs/core'
@@ -9,7 +10,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class PoiController {
   constructor(
     protected poiService: PoiService,
-    protected postService: PostService
+    protected postService: PostService,
+    protected ticketSerivce: TicketService
   ) {}
 
   async index({ response, request }: HttpContext) {
@@ -32,5 +34,11 @@ export default class PoiController {
     const posts = await this.postService.indexPoiPosts(params.id, payload)
 
     return response.ok(posts.toJSON())
+  }
+
+  async indexTickets({ response, params }: HttpContext) {
+    const tickets = await this.ticketSerivce.indexPoiTickets(params.id)
+
+    return response.ok(tickets)
   }
 }

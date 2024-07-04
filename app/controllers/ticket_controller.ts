@@ -1,5 +1,6 @@
 import TicketService from '#services/ticket_service'
 import { storeTicketValidator } from '#validators/ticket/store_ticket_validator'
+import { updateTicketValidator } from '#validators/ticket/update_ticket_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -16,5 +17,25 @@ export default class TicketController {
     })
 
     return response.created(ticket.toJSON())
+  }
+
+  async update({ request, response, params }: HttpContext) {
+    let payload = await request.validateUsing(updateTicketValidator)
+
+    const ticket = await this.ticketService.update(params.id, payload)
+
+    return response.ok(ticket.toJSON())
+  }
+
+  async show({ response, params }: HttpContext) {
+    const ticket = await this.ticketService.show(params.id)
+
+    return response.ok(ticket.toJSON())
+  }
+
+  async delete({ response, params }: HttpContext) {
+    await this.ticketService.delete(params.id)
+
+    return response.noContent()
   }
 }

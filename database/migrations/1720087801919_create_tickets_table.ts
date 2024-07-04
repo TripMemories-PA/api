@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.integer('quantity').notNullable()
       table.integer('price').notNullable()
       table.integer('group_size').notNullable()
+      table.boolean('available').notNullable().defaultTo(true)
       table.integer('poi_id').unsigned().references('id').inTable('pois')
 
       table.timestamp('created_at')

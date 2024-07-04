@@ -8,7 +8,6 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
-import { args } from '@adonisjs/core/ace'
 import { UserTypes } from '../app/types/models/user_types.js'
 const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
@@ -90,6 +89,7 @@ router
     router.get('', [PoiController, 'index'])
     router.get('/:id', [PoiController, 'show'])
     router.get('/:id/posts', [PoiController, 'indexPosts'])
+    router.get('/:id/tickets', [PoiController, 'indexTickets'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -139,7 +139,16 @@ router
 // TICKETS
 router
   .group(() => {
+    router.get('/:id', [TicketController, 'show'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.public())
+
+router
+  .group(() => {
     router.post('', [TicketController, 'store'])
+    router.put('/:id', [TicketController, 'update'])
+    router.delete('/:id', [TicketController, 'delete'])
   })
   .prefix('tickets')
   .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))

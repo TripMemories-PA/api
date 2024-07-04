@@ -16,13 +16,18 @@ export default class Ticket extends BaseModel {
 
   @column({
     serialize(value) {
-      return value / 100
+      return (value / 100).toFixed(2)
     },
   })
   declare price: number
 
   @column()
   declare groupSize: number
+
+  @column({
+    serializeAs: null,
+  })
+  declare available: boolean
 
   @column()
   declare poiId: number
