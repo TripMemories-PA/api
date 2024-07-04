@@ -19,6 +19,7 @@ import FriendRequest from './friend_request.js'
 import { HttpContext } from '@adonisjs/core/http'
 import Post from './post.js'
 import UserType from './user_type.js'
+import Poi from './poi.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -67,6 +68,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'bannerId',
   })
   declare banner: BelongsTo<typeof UploadFile>
+
+  @column()
+  declare poiId: number
+
+  @belongsTo(() => Poi, {
+    foreignKey: 'poiId',
+  })
+  declare poi: BelongsTo<typeof Poi>
 
   @hasMany(() => FriendRequest, {
     foreignKey: 'senderId',

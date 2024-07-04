@@ -8,6 +8,7 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
 const CommentController = () => import('#controllers/comment_controller')
 const PostController = () => import('#controllers/post_controller')
@@ -132,3 +133,11 @@ router
   })
   .prefix('cities')
   .middleware(middleware.public())
+
+// TICKETS
+router
+  .group(() => {
+    router.post('', [TicketController, 'store'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.auth())
