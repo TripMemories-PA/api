@@ -5,7 +5,10 @@ import { UpdateQuestionRequest } from '../types/requests/question/update_questio
 import Answer from '#models/answer'
 import FileService from './file_service.js'
 import AuthService from './auth_service.js'
+import User from '#models/user'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class QuestionService {
   constructor(
     private fileService: FileService,
@@ -13,11 +16,11 @@ export default class QuestionService {
   ) {}
 
   async index() {
-    return await Question.query().orderByRaw('RAND()').limit(10).exec()
+    return await Question.query().orderByRaw('RANDOM()').limit(10).exec()
   }
 
   async indexPoiQuestions(poiId: number) {
-    return await Question.query().where('poiId', poiId).orderByRaw('RAND()').limit(10).exec()
+    return await Question.query().where('poiId', poiId).orderByRaw('RANDOM()').limit(10).exec()
   }
 
   async create(payload: CreateQuestionRequest) {
@@ -83,5 +86,29 @@ export default class QuestionService {
     }
 
     await question.delete()
+  }
+
+  async validateAnswer(questionId: number, answerId: number, userId?: number) {
+    const question = await Question.query().where('id', questionId).preload('answers').firstOrFail()
+
+    const answer = question.answers.find((e) => e.id === answerId)
+
+    if (!answer) {
+      throw new Exception('Answer not found', { status: 404 })
+    }
+
+    if (userId) {
+      const user = await User.query().where('id', userId).firstOrFail()
+
+      if (answer.isCorrect) {
+        user.score += 10
+        await user.save()
+      } else {
+        user.score -= 5
+        await user.save()
+      }
+    }
+
+    return answer.isCorrect
   }
 }

@@ -173,6 +173,7 @@ router
 router
   .group(() => {
     router.get('', [QuestionController, 'index'])
+    router.post('/:questionId/answers/:answerId', [QuestionController, 'validateAnswer'])
   })
   .prefix('questions')
   .middleware(middleware.public())

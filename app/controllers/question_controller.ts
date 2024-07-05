@@ -3,8 +3,10 @@ import QuestionService from '#services/question_service'
 import { storeQuestionImageValidator } from '#validators/question/store_question_image_validator'
 import { storeQuestionValidator } from '#validators/question/store_question_validator'
 import { updateQuestionValidator } from '#validators/question/update_question_validator'
+import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
+@inject()
 export default class QuestionController {
   constructor(
     protected questionService: QuestionService,
@@ -48,5 +50,15 @@ export default class QuestionController {
     await this.questionService.delete(params.id)
 
     return response.noContent()
+  }
+
+  async validateAnswer({ params, response, auth }: HttpContext) {
+    const isCorrect = await this.questionService.validateAnswer(
+      params.questionId,
+      params.answerId,
+      auth.user ? auth.user.id : undefined
+    )
+
+    return response.ok({ isCorrect })
   }
 }

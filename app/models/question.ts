@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { afterFetch, afterFind, BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import Poi from './poi.js'
-import { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import UploadFile from './upload_file.js'
 import Answer from './answer.js'
 
