@@ -101,4 +101,8 @@ export default class TicketService {
       })
     }
   }
+
+  async indexUserTickets(userId: number) {
+    return await UserTicket.query().where('userId', userId).where('paid', true).exec()
+  }
 }

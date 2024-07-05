@@ -51,6 +51,7 @@ router
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
     router.get('/posts', [MeController, 'indexPosts'])
+    router.get('/tickets', [MeController, 'indexTickets'])
 
     router
       .group(() => {

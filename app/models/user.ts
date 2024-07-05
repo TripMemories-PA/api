@@ -45,11 +45,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare lastname: string
 
-  @column()
-  declare userTypeId: number
+  @column({ serializeAs: null })
+  declare customerId: string | null
 
   @column()
-  declare customerId: string | null
+  declare userTypeId: number
 
   @belongsTo(() => UserType, {
     foreignKey: 'userTypeId',
