@@ -26,7 +26,7 @@ export default class TicketService {
   }
 
   async show(id: number) {
-    return await Ticket.query().where('id', id).firstOrFail()
+    return await Ticket.query().where('id', id).where('available', true).firstOrFail()
   }
 
   async indexPoiTickets(poiId: number) {
@@ -34,7 +34,7 @@ export default class TicketService {
   }
 
   async delete(id: number) {
-    const ticket = await Ticket.query().where('id', id).firstOrFail()
+    const ticket = await Ticket.query().where('id', id).where('available', true).firstOrFail()
 
     const user = this.authService.getAuthenticatedUser()
 
@@ -47,7 +47,7 @@ export default class TicketService {
   }
 
   async update(id: number, payload: UpdateTicketRequest) {
-    const ticket = await Ticket.query().where('id', id).firstOrFail()
+    const ticket = await Ticket.query().where('id', id).where('available', true).firstOrFail()
 
     const user = this.authService.getAuthenticatedUser()
 
@@ -67,7 +67,7 @@ export default class TicketService {
   }
 
   async buy(userId: number, ticketIds: number[]) {
-    const tickets = await Ticket.query().whereIn('id', ticketIds).exec()
+    const tickets = await Ticket.query().whereIn('id', ticketIds).where('available', true).exec()
     const totalPrice = ticketIds.reduce((acc, ticketId) => {
       const ticket = tickets.find((element) => element.id === ticketId)!
       return acc + ticket.price

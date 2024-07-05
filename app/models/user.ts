@@ -20,6 +20,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import Post from './post.js'
 import UserType from './user_type.js'
 import Poi from './poi.js'
+import UserTicket from './user_ticket.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -89,6 +90,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'receiverId',
   })
   declare receivedFriendRequests: HasMany<typeof FriendRequest>
+
+  @hasMany(() => UserTicket, {
+    foreignKey: 'userId',
+  })
+  declare tickets: HasMany<typeof UserTicket>
 
   @manyToMany(() => User, {
     pivotTable: 'friends',
