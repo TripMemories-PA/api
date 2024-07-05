@@ -68,8 +68,13 @@ export default class TicketService {
 
   async buy(userId: number, ticketIds: number[]) {
     const tickets = await Ticket.query().whereIn('id', ticketIds).exec()
-    const totalPrice = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
-    const paymentIntent = await this.stripeService.createPaymentIntent(totalPrice)
+    const totalPrice = ticketIds.reduce((acc, ticketId) => {
+      const ticket = tickets.find((element) => element.id === ticketId)!
+      return acc + ticket.price
+    }, 0)
+
+    const customerId = await this.stripeService.getCustomerId(userId)
+    const paymentIntent = await this.stripeService.createPaymentIntent(totalPrice, customerId)
 
     ticketIds.forEach(async (ticketId) => {
       await UserTicket.create({
@@ -87,7 +92,6 @@ export default class TicketService {
   async webhook(payload: any) {
     if (payload.type === 'payment_intent.succeeded') {
       const paymentIntent = payload.data.object
-      paymentIntent.id = 'pi_3PZBQZD03zNfc2se0I5JA3mk'
 
       const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
 

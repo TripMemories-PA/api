@@ -48,6 +48,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare userTypeId: number
 
+  @column()
+  declare customerId: string | null
+
   @belongsTo(() => UserType, {
     foreignKey: 'userTypeId',
   })
