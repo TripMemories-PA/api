@@ -1,4 +1,5 @@
 import TicketService from '#services/ticket_service'
+import { buyTicketValidator } from '#validators/ticket/buy_ticket_validator'
 import { storeTicketValidator } from '#validators/ticket/store_ticket_validator'
 import { updateTicketValidator } from '#validators/ticket/update_ticket_validator'
 import { inject } from '@adonisjs/core'
@@ -35,6 +36,22 @@ export default class TicketController {
 
   async delete({ response, params }: HttpContext) {
     await this.ticketService.delete(params.id)
+
+    return response.noContent()
+  }
+
+  async buy({ request, response, auth }: HttpContext) {
+    const { ticketIds } = await request.validateUsing(buyTicketValidator)
+
+    const paymentIntent = await this.ticketService.buy(auth.user!.id, ticketIds)
+
+    return response.ok({
+      paymentIntent: paymentIntent.client_secret,
+    })
+  }
+
+  async webhook({ request, response }: HttpContext) {
+    await this.ticketService.webhook(request.body())
 
     return response.noContent()
   }

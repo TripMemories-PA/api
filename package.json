@@ -62,7 +62,8 @@
     "luxon": "^3.4.4",
     "minio": "^8.0.0",
     "pg": "^8.11.5",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "stripe": "^16.1.0"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/app"

@@ -3,10 +3,16 @@ import { inject } from '@adonisjs/core'
 import { CreateTicketRequest } from '../types/requests/ticket/create_ticket_request.js'
 import { UpdateTicketRequest } from '../types/requests/ticket/update_ticket_request.js'
 import AuthService from './auth_service.js'
+import StripeService from './stripe_service.js'
+import UserTicket from '#models/user_ticket'
+import { randomUUID } from 'node:crypto'
 
 @inject()
 export default class TicketService {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private stripeService: StripeService
+  ) {}
 
   async create(payload: CreateTicketRequest) {
     return await Ticket.create({
@@ -58,5 +64,37 @@ export default class TicketService {
     })
 
     return await ticket.save()
+  }
+
+  async buy(userId: number, ticketIds: number[]) {
+    const tickets = await Ticket.query().whereIn('id', ticketIds).exec()
+    const totalPrice = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
+    const paymentIntent = await this.stripeService.createPaymentIntent(totalPrice)
+
+    ticketIds.forEach(async (ticketId) => {
+      await UserTicket.create({
+        piId: paymentIntent.id,
+        qrCode: randomUUID(),
+        ticketId,
+        userId,
+        price: tickets.find((ticket) => ticket.id === ticketId)!.price,
+      })
+    })
+
+    return paymentIntent
+  }
+
+  async webhook(payload: any) {
+    if (payload.type === 'payment_intent.succeeded') {
+      const paymentIntent = payload.data.object
+      paymentIntent.id = 'pi_3PZBQZD03zNfc2se0I5JA3mk'
+
+      const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
+
+      userTickets.forEach(async (userTicket) => {
+        userTicket.paid = true
+        await userTicket.save()
+      })
+    }
   }
 }

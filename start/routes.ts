@@ -68,6 +68,12 @@ router
         router.get('/posts', [FriendController, 'indexMyFriendsPosts'])
       })
       .prefix('/friends')
+
+    router
+      .group(() => {
+        router.post('/buy', [TicketController, 'buy'])
+      })
+      .prefix('/tickets')
   })
   .prefix('me')
   .middleware(middleware.auth())
@@ -143,6 +149,13 @@ router
   })
   .prefix('tickets')
   .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('/webhook', [TicketController, 'webhook'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.stripe())
 
 router
   .group(() => {
