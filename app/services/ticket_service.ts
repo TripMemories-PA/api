@@ -6,6 +6,8 @@ import AuthService from './auth_service.js'
 import StripeService from './stripe_service.js'
 import UserTicket from '#models/user_ticket'
 import { randomUUID } from 'node:crypto'
+import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
+import { Exception } from '@adonisjs/core/exceptions'
 
 @inject()
 export default class TicketService {
@@ -66,24 +68,33 @@ export default class TicketService {
     return await ticket.save()
   }
 
-  async buy(userId: number, ticketIds: number[]) {
-    const tickets = await Ticket.query().whereIn('id', ticketIds).where('available', true).exec()
-    const totalPrice = ticketIds.reduce((acc, ticketId) => {
-      const ticket = tickets.find((element) => element.id === ticketId)!
-      return acc + ticket.price
+  async buy(userId: number, buyTickets: BuyTicketRequest[]) {
+    const tickets = await Ticket.query()
+      .whereIn(
+        'id',
+        buyTickets.map((ticket) => ticket.id)
+      )
+      .where('available', true)
+      .exec()
+
+    const totalPrice = tickets.reduce((acc, ticket) => {
+      const buyTicket = buyTickets.find((element) => element.id === ticket.id)
+      return acc + ticket.price * buyTicket!.quantity
     }, 0)
 
     const customerId = await this.stripeService.getCustomerId(userId)
     const paymentIntent = await this.stripeService.createPaymentIntent(totalPrice, customerId)
 
-    ticketIds.forEach(async (ticketId) => {
-      await UserTicket.create({
-        piId: paymentIntent.id,
-        qrCode: randomUUID(),
-        ticketId,
-        userId,
-        price: tickets.find((ticket) => ticket.id === ticketId)!.price,
-      })
+    buyTickets.forEach(async (buyTicket) => {
+      await UserTicket.createMany(
+        Array.from({ length: buyTicket.quantity }).map(() => ({
+          piId: paymentIntent.id,
+          qrCode: randomUUID(),
+          ticketId: buyTicket.id,
+          userId,
+          price: tickets.find((ticket) => ticket.id === buyTicket.id)!.price,
+        }))
+      )
     })
 
     return paymentIntent
@@ -98,6 +109,10 @@ export default class TicketService {
       userTickets.forEach(async (userTicket) => {
         userTicket.paid = true
         await userTicket.save()
+
+        const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
+        ticket.quantity -= 1
+        await ticket.save()
       })
     }
   }

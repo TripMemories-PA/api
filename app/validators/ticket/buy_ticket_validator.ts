@@ -3,12 +3,29 @@ import vine from '@vinejs/vine'
 
 export const buyTicketValidator = vine.compile(
   vine.object({
-    ticketIds: vine.array(
-      vine.number().exists(async (_, value) => {
-        const ticket = await Ticket.query().where('id', value).where('available', true).first()
+    tickets: vine
+      .array(
+        vine.object({
+          id: vine.number().exists(async (_, value) => {
+            const ticket = await Ticket.query().where('id', value).where('available', true).first()
 
-        return !!ticket
-      })
-    ),
+            return !!ticket
+          }),
+          quantity: vine
+            .number()
+            .min(1)
+            .exists(async (_, value, field) => {
+              const ticket = await Ticket.query().where('id', field.parent.id).first()
+
+              if (!ticket) {
+                return false
+              }
+
+              return ticket.quantity >= Number(value)
+            }),
+        })
+      )
+      .distinct('id')
+      .minLength(1),
   })
 )

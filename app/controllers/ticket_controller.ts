@@ -41,9 +41,9 @@ export default class TicketController {
   }
 
   async buy({ request, response, auth }: HttpContext) {
-    const { ticketIds } = await request.validateUsing(buyTicketValidator)
+    const { tickets } = await request.validateUsing(buyTicketValidator)
 
-    const paymentIntent = await this.ticketService.buy(auth.user!.id, ticketIds)
+    const paymentIntent = await this.ticketService.buy(auth.user!.id, tickets)
 
     return response.ok({
       paymentIntent: paymentIntent.client_secret,
