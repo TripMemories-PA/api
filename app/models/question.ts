@@ -48,7 +48,10 @@ export default class Question extends BaseModel {
         poi.preload('type')
         poi.preload('cover')
       })
-      loader.load('answers')
+
+      loader.load('answers', (answers) => {
+        answers.orderByRaw('RANDOM()')
+      })
     })
   }
 

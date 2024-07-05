@@ -36,6 +36,7 @@ export default class QuestionService {
       poiId: payload.poiId,
     })
 
+    payload.answers.sort(() => Math.random() - 0.5)
     await question.related('answers').createMany(payload.answers)
 
     return question
@@ -59,6 +60,7 @@ export default class QuestionService {
 
       await Answer.query().where('questionId', id).delete()
 
+      payload.answers.sort(() => Math.random() - 0.5)
       await question.related('answers').createMany(payload.answers)
     }
 

@@ -16,6 +16,10 @@ export const UserFactory = factory
       password: faker.internet.password(),
       firstname: faker.person.firstName(),
       lastname: faker.person.lastName(),
+      score: faker.number.int({
+        min: 50,
+        max: 500,
+      }),
       userTypeId: UserTypes.USER,
     }
   })
