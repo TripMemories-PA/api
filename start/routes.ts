@@ -9,6 +9,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { UserTypes } from '../app/types/models/user_types.js'
+const QuestionController = () => import('#controllers/question_controller')
 const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
 const CommentController = () => import('#controllers/comment_controller')
@@ -97,6 +98,7 @@ router
     router.get('/:id', [PoiController, 'show'])
     router.get('/:id/posts', [PoiController, 'indexPosts'])
     router.get('/:id/tickets', [PoiController, 'indexTickets'])
+    router.get('/:id/questions', [PoiController, 'indexQuestions'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -165,4 +167,22 @@ router
     router.delete('/:id', [TicketController, 'delete'])
   })
   .prefix('tickets')
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))
+
+// QUESTIONS
+router
+  .group(() => {
+    router.get('', [QuestionController, 'index'])
+  })
+  .prefix('questions')
+  .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('', [QuestionController, 'store'])
+    router.post('/image', [QuestionController, 'storeImage'])
+    router.put('/:id', [QuestionController, 'update'])
+    router.delete('/:id', [QuestionController, 'delete'])
+  })
+  .prefix('questions')
   .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))

@@ -1,5 +1,6 @@
 import PoiService from '#services/poi_service'
 import PostService from '#services/post_service'
+import QuestionService from '#services/question_service'
 import TicketService from '#services/ticket_service'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
@@ -11,7 +12,8 @@ export default class PoiController {
   constructor(
     protected poiService: PoiService,
     protected postService: PostService,
-    protected ticketSerivce: TicketService
+    protected ticketSerivce: TicketService,
+    protected questionService: QuestionService
   ) {}
 
   async index({ response, request }: HttpContext) {
@@ -40,5 +42,11 @@ export default class PoiController {
     const tickets = await this.ticketSerivce.indexPoiTickets(params.id)
 
     return response.ok(tickets)
+  }
+
+  async indexQuestions({ response, params }: HttpContext) {
+    const questions = await this.questionService.indexPoiQuestions(params.id)
+
+    return response.ok(questions)
   }
 }
