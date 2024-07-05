@@ -8,6 +8,8 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import { UserTypes } from '../app/types/models/user_types.js'
+const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
 const CommentController = () => import('#controllers/comment_controller')
 const PostController = () => import('#controllers/post_controller')
@@ -49,6 +51,7 @@ router
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
     router.get('/posts', [MeController, 'indexPosts'])
+    router.get('/tickets', [MeController, 'indexTickets'])
 
     router
       .group(() => {
@@ -66,6 +69,12 @@ router
         router.get('/posts', [FriendController, 'indexMyFriendsPosts'])
       })
       .prefix('/friends')
+
+    router
+      .group(() => {
+        router.post('/buy', [TicketController, 'buy'])
+      })
+      .prefix('/tickets')
   })
   .prefix('me')
   .middleware(middleware.auth())
@@ -87,6 +96,7 @@ router
     router.get('', [PoiController, 'index'])
     router.get('/:id', [PoiController, 'show'])
     router.get('/:id/posts', [PoiController, 'indexPosts'])
+    router.get('/:id/tickets', [PoiController, 'indexTickets'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -132,3 +142,27 @@ router
   })
   .prefix('cities')
   .middleware(middleware.public())
+
+// TICKETS
+router
+  .group(() => {
+    router.get('/:id', [TicketController, 'show'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('/webhook', [TicketController, 'webhook'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.stripe())
+
+router
+  .group(() => {
+    router.post('', [TicketController, 'store'])
+    router.put('/:id', [TicketController, 'update'])
+    router.delete('/:id', [TicketController, 'delete'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))

@@ -18,9 +18,17 @@ export default class extends BaseSchema {
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
+
+    this.schema.alterTable('users', (table) => {
+      table.integer('poi_id').unsigned().nullable().references('pois.id')
+    })
   }
 
   async down() {
     this.schema.dropTable(this.tableName)
+
+    this.schema.alterTable('users', (table) => {
+      table.dropColumn('poi_id')
+    })
   }
 }

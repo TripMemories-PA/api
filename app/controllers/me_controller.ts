@@ -1,4 +1,5 @@
 import PostService from '#services/post_service'
+import TicketService from '#services/ticket_service'
 import UserService from '#services/user_service'
 import { indexPostValidator } from '#validators/post/index_post_validator'
 import { storeAvatarValidator } from '#validators/user/store_avatar_validator'
@@ -11,7 +12,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class MeController {
   constructor(
     protected userService: UserService,
-    protected postService: PostService
+    protected postService: PostService,
+    protected ticketService: TicketService
   ) {}
 
   async show({ response, auth }: HttpContext) {
@@ -58,5 +60,11 @@ export default class MeController {
     const posts = await this.postService.indexUserPosts(auth.user!.id, payload)
 
     return response.ok(posts.toJSON())
+  }
+
+  async indexTickets({ response, auth }: HttpContext) {
+    const tickets = await this.ticketService.indexUserTickets(auth.user!.id)
+
+    return response.ok(tickets)
   }
 }
