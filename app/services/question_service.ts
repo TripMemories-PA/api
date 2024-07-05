@@ -50,13 +50,6 @@ export default class QuestionService {
       throw new Exception('You are not allowed to update this question', { status: 403 })
     }
 
-    question.merge({
-      question: payload.question ?? question.question,
-      imageId: payload.imageId ?? question.imageId,
-    })
-
-    await question.save()
-
     if (payload.answers) {
       const correctAnswers = payload.answers.filter((answer) => answer.isCorrect)
 
@@ -69,7 +62,16 @@ export default class QuestionService {
       await question.related('answers').createMany(payload.answers)
     }
 
-    return question
+    if (question.image && payload.imageId) {
+      this.fileService.delete(question.image)
+    }
+
+    question.merge({
+      question: payload.question ?? question.question,
+      imageId: payload.imageId ?? question.imageId,
+    })
+
+    return await question.save()
   }
 
   async delete(id: number) {
