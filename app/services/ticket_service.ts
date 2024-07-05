@@ -7,7 +7,6 @@ import StripeService from './stripe_service.js'
 import UserTicket from '#models/user_ticket'
 import { randomUUID } from 'node:crypto'
 import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
-import { Exception } from '@adonisjs/core/exceptions'
 
 @inject()
 export default class TicketService {
