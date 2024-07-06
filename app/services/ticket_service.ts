@@ -105,19 +105,17 @@ export default class TicketService {
 
       const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
 
-      userTickets.forEach(async (userTicket) => {
+      for (const userTicket of userTickets) {
         userTicket.paid = true
         await userTicket.save()
 
         const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
-
         ticket.quantity -= 1
         if (ticket.quantity <= 0) {
           ticket.quantity = 0
         }
-
         await ticket.save()
-      })
+      }
     }
   }
 
