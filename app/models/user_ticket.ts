@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { afterFetch, afterFind, BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import Ticket from './ticket.js'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import User from './user.js'
 
 export default class UserTicket extends BaseModel {
   @column({ isPrimary: true })
@@ -30,6 +31,11 @@ export default class UserTicket extends BaseModel {
   @column()
   declare userId: number
 
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  declare user: BelongsTo<typeof User>
+
   @column({ serializeAs: null })
   declare price: number
 
@@ -47,6 +53,12 @@ export default class UserTicket extends BaseModel {
         poi.preload('city')
         poi.preload('type')
       })
+    })
+
+    await userTicket.load('user', (user) => {
+      user.preload('avatar')
+      user.preload('banner')
+      user.preload('userType')
     })
   }
 

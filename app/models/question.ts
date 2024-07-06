@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import {
-  afterFetch,
   afterFind,
   afterPaginate,
   BaseModel,
