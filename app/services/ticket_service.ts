@@ -110,7 +110,12 @@ export default class TicketService {
         await userTicket.save()
 
         const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
+
         ticket.quantity -= 1
+        if (ticket.quantity <= 0) {
+          ticket.quantity = 0
+        }
+
         await ticket.save()
       })
     }
