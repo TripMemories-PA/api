@@ -1,5 +1,13 @@
 import { DateTime } from 'luxon'
-import { afterFetch, afterFind, BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import {
+  afterFetch,
+  afterFind,
+  afterPaginate,
+  BaseModel,
+  belongsTo,
+  column,
+  hasMany,
+} from '@adonisjs/lucid/orm'
 import Poi from './poi.js'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import UploadFile from './upload_file.js'
@@ -55,7 +63,7 @@ export default class Question extends BaseModel {
     })
   }
 
-  @afterFetch()
+  @afterPaginate()
   static async loadQuestionsRelations(questions: Question[]) {
     await Promise.all(questions.map((question) => Question.loadQuestionRelations(question)))
   }

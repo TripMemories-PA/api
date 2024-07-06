@@ -5,17 +5,19 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 export default class extends BaseSeeder {
   async run() {
     const defaultPoiId = 3407 // Arc de Triomphe
+    const countQuestionsWithImage = 10
+    const countQuestionsWithoutImage = 10
 
     let questions = await QuestionFactory.merge({
       poiId: defaultPoiId,
     })
       .with('image')
-      .createMany(10)
+      .createMany(countQuestionsWithImage)
 
     questions = questions.concat(
       await QuestionFactory.merge({
         poiId: defaultPoiId,
-      }).createMany(10)
+      }).createMany(countQuestionsWithoutImage)
     )
 
     for (const question of questions) {

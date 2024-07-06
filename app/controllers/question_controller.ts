@@ -1,5 +1,6 @@
 import FileService from '#services/file_service'
 import QuestionService from '#services/question_service'
+import { indexQuestionValidator } from '#validators/question/index_question_validator'
 import { storeQuestionImageValidator } from '#validators/question/store_question_image_validator'
 import { storeQuestionValidator } from '#validators/question/store_question_validator'
 import { updateQuestionValidator } from '#validators/question/update_question_validator'
@@ -13,10 +14,12 @@ export default class QuestionController {
     protected fileService: FileService
   ) {}
 
-  async index({ response }: HttpContext) {
-    const questions = await this.questionService.index()
+  async index({ response, request }: HttpContext) {
+    const payload = await request.validateUsing(indexQuestionValidator)
 
-    return response.ok(questions)
+    const questions = await this.questionService.index(payload)
+
+    return response.ok(questions.toJSON())
   }
 
   async store({ request, response, auth }: HttpContext) {

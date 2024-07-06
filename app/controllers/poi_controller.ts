@@ -4,6 +4,7 @@ import QuestionService from '#services/question_service'
 import TicketService from '#services/ticket_service'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
+import { indexQuestionValidator } from '#validators/question/index_question_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -44,9 +45,10 @@ export default class PoiController {
     return response.ok(tickets)
   }
 
-  async indexQuestions({ response, params }: HttpContext) {
-    const questions = await this.questionService.indexPoiQuestions(params.id)
+  async indexQuestions({ response, params, request }: HttpContext) {
+    const payload = await request.validateUsing(indexQuestionValidator)
+    const questions = await this.questionService.indexPoiQuestions(params.id, payload)
 
-    return response.ok(questions)
+    return response.ok(questions.toJSON())
   }
 }

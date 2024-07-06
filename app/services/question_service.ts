@@ -7,6 +7,7 @@ import FileService from './file_service.js'
 import AuthService from './auth_service.js'
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
+import { PaginateRequest } from '../types/requests/paginate_request.js'
 
 @inject()
 export default class QuestionService {
@@ -15,12 +16,15 @@ export default class QuestionService {
     private authService: AuthService
   ) {}
 
-  async index() {
-    return await Question.query().orderByRaw('RANDOM()').limit(10).exec()
+  async index(payload: PaginateRequest) {
+    return await Question.query().orderByRaw('RANDOM()').paginate(payload.page, payload.perPage)
   }
 
-  async indexPoiQuestions(poiId: number) {
-    return await Question.query().where('poiId', poiId).orderByRaw('RANDOM()').limit(10).exec()
+  async indexPoiQuestions(poiId: number, payload: PaginateRequest) {
+    return await Question.query()
+      .where('poiId', poiId)
+      .orderByRaw('RANDOM()')
+      .paginate(payload.page, payload.perPage)
   }
 
   async create(payload: CreateQuestionRequest) {
