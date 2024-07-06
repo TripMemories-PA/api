@@ -43,7 +43,7 @@ export default class QuestionService {
     payload.answers.sort(() => Math.random() - 0.5)
     await question.related('answers').createMany(payload.answers)
 
-    return question
+    return Question.query().where('id', question.id).firstOrFail()
   }
 
   async update(id: number, payload: UpdateQuestionRequest) {
@@ -69,7 +69,7 @@ export default class QuestionService {
     }
 
     if (question.image && payload.imageId) {
-      this.fileService.delete(question.image)
+      await this.fileService.delete(question.image)
     }
 
     question.merge({
@@ -77,7 +77,9 @@ export default class QuestionService {
       imageId: payload.imageId ?? question.imageId,
     })
 
-    return await question.save()
+    await question.save()
+
+    return await Question.query().where('id', id).firstOrFail()
   }
 
   async delete(id: number) {
@@ -99,7 +101,7 @@ export default class QuestionService {
   async validateAnswer(questionId: number, answerId: number, userId?: number) {
     const question = await Question.query().where('id', questionId).preload('answers').firstOrFail()
 
-    const answer = question.answers.find((e) => e.id === answerId)
+    const answer = question.answers.find((e) => e.id === Number(answerId))
 
     if (!answer) {
       throw new Exception('Answer not found', { status: 404 })
@@ -112,7 +114,11 @@ export default class QuestionService {
         user.score += 10
         await user.save()
       } else {
-        user.score -= 5
+        if (user.score < 5) {
+          user.score = 0
+        } else {
+          user.score -= 5
+        }
         await user.save()
       }
     }

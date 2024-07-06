@@ -56,9 +56,10 @@ export default class QuestionController {
   }
 
   async validateAnswer({ params, response, auth }: HttpContext) {
+    console.log(params.answerId)
     const isCorrect = await this.questionService.validateAnswer(
-      params.questionId,
-      params.answerId,
+      Number(params.questionId),
+      Number(params.answerId),
       auth.user ? auth.user.id : undefined
     )
 

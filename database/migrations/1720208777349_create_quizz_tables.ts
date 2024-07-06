@@ -5,7 +5,12 @@ export default class extends BaseSchema {
     this.schema.createTable('questions', (table) => {
       table.increments('id')
       table.string('question', 255).notNullable()
-      table.integer('image_id').unsigned().references('id').inTable('upload_files').nullable()
+      table
+        .integer('image_id')
+        .unsigned()
+        .references('id')
+        .inTable('upload_files')
+        .onDelete('SET NULL')
       table.integer('poi_id').unsigned().references('id').inTable('pois').notNullable()
 
       table.timestamp('created_at')

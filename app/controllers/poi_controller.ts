@@ -28,7 +28,7 @@ export default class PoiController {
   async show({ response, params }: HttpContext) {
     const poi = await this.poiService.show(params.id)
 
-    return response.ok(poi)
+    return response.ok(poi.toJSON())
   }
 
   async indexPosts({ response, request, params }: HttpContext) {
