@@ -26,6 +26,11 @@ export default class UserService {
       })
     }
 
+    if (request.sortBy && request.order) {
+      const order = request.order === 'asc' ? 'asc' : 'desc'
+      query.orderBy(request.sortBy, order)
+    }
+
     try {
       const authUser = this.authService.getAuthenticatedUser()
       query.whereNot('id', authUser.id)

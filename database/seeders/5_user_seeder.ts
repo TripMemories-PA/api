@@ -55,7 +55,7 @@ export default class extends BaseSeeder {
     await UserFactory.merge({
       password: defaultPassword,
       userTypeId: UserTypes.POI,
-      poiId: 3407, // Arc de Triomphe
+      poiId: defaultPoiId,
       username: 'poi',
       email: 'poi@mail.com',
     }).create()
