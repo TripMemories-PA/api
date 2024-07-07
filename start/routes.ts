@@ -165,6 +165,7 @@ router
     router.post('', [TicketController, 'store'])
     router.put('/:id', [TicketController, 'update'])
     router.delete('/:id', [TicketController, 'delete'])
+    router.post('/validate', [TicketController, 'validate'])
   })
   .prefix('tickets')
   .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))
