@@ -1,6 +1,5 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
-import { PaginateRequest } from '../types/requests/paginate_request.js'
 import { UserTypes } from '../types/models/user_types.js'
 import { IndexFriendRequest } from '../types/requests/friend/index_friend_request.js'
 
