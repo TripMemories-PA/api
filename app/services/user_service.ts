@@ -51,6 +51,8 @@ export default class UserService {
       email: payload.email ?? user.email,
       firstname: payload.firstname ?? user.firstname,
       lastname: payload.lastname ?? user.lastname,
+      longitude: payload.longitude ?? user.longitude,
+      latitude: payload.latitude ?? user.latitude,
     })
 
     return await user.save()

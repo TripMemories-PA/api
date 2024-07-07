@@ -46,6 +46,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare score: number
 
+  @column()
+  declare longitude: number | null
+
+  @column()
+  declare latitude: number | null
+
   @column({ serializeAs: null })
   declare customerId: string | null
 

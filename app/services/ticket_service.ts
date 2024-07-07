@@ -7,6 +7,8 @@ import StripeService from './stripe_service.js'
 import UserTicket from '#models/user_ticket'
 import { randomUUID } from 'node:crypto'
 import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
+import { Exception } from '@adonisjs/core/exceptions'
+import { DateTime } from 'luxon'
 
 @inject()
 export default class TicketService {
@@ -105,23 +107,38 @@ export default class TicketService {
 
       const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
 
-      userTickets.forEach(async (userTicket) => {
+      for (const userTicket of userTickets) {
         userTicket.paid = true
         await userTicket.save()
 
         const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
-
         ticket.quantity -= 1
         if (ticket.quantity <= 0) {
           ticket.quantity = 0
         }
-
         await ticket.save()
-      })
+      }
     }
   }
 
   async indexUserTickets(userId: number) {
     return await UserTicket.query().where('userId', userId).where('paid', true).exec()
+  }
+
+  async validate(qrCode: string) {
+    const ticket = await UserTicket.query().where('qrCode', qrCode).firstOrFail()
+
+    if (!ticket.paid) {
+      throw new Exception('Ticket not paid', { status: 403 })
+    }
+
+    if (ticket.usedAt) {
+      return { valid: false, ticket }
+    }
+
+    ticket.usedAt = DateTime.now()
+    await ticket.save()
+
+    return { valid: true, ticket }
   }
 }

@@ -2,6 +2,7 @@ import TicketService from '#services/ticket_service'
 import { buyTicketValidator } from '#validators/ticket/buy_ticket_validator'
 import { storeTicketValidator } from '#validators/ticket/store_ticket_validator'
 import { updateTicketValidator } from '#validators/ticket/update_ticket_validator'
+import { validateTicketValidator } from '#validators/ticket/validate_ticket_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -54,5 +55,13 @@ export default class TicketController {
     await this.ticketService.webhook(request.body())
 
     return response.noContent()
+  }
+
+  async validate({ request, response }: HttpContext) {
+    const { qrCode } = await request.validateUsing(validateTicketValidator)
+
+    const res = await this.ticketService.validate(qrCode)
+
+    return response.ok(res)
   }
 }

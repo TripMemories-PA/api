@@ -30,5 +30,7 @@ export const updateUserValidator = vine.withMetaData<AuthMetadata>().compile(
       .optional(),
     firstname: vine.string().minLength(3).maxLength(32).optional(),
     lastname: vine.string().minLength(3).maxLength(32).optional(),
+    longitude: vine.number().optional().requiredIfExists(['latitude']),
+    latitude: vine.number().optional().requiredIfExists(['longitude']),
   })
 )

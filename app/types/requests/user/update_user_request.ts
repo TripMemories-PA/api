@@ -3,4 +3,6 @@ export interface UpdateUserRequest {
   email?: string
   firstname?: string
   lastname?: string
+  longitude?: number
+  latitude?: number
 }
