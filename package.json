@@ -10,6 +10,8 @@
     "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
+    "pm2:dev": "pm2 start \"npm run dev\" --name api_dev",
+    "pm2:prod": "pm2 start \"npm run dev\" --name api_prod",
     "migrate:fresh": "node ace migration:fresh --seed",
     "lint": "eslint . --ignore-pattern docker/",
     "lint:fix": "eslint . --ignore-pattern docker/ --fix",
@@ -62,7 +64,8 @@
     "luxon": "^3.4.4",
     "minio": "^8.0.0",
     "pg": "^8.11.5",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "stripe": "^16.1.0"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/app"

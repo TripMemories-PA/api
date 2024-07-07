@@ -8,6 +8,9 @@
 */
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import { UserTypes } from '../app/types/models/user_types.js'
+const QuestionController = () => import('#controllers/question_controller')
+const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
 const CommentController = () => import('#controllers/comment_controller')
 const PostController = () => import('#controllers/post_controller')
@@ -33,6 +36,13 @@ router
   })
   .prefix('auth')
 
+router
+  .group(() => {
+    router.post('/refresh', [AuthController, 'refresh'])
+  })
+  .prefix('auth')
+  .middleware(middleware.auth())
+
 // ME
 router
   .group(() => {
@@ -42,6 +52,7 @@ router
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
     router.get('/posts', [MeController, 'indexPosts'])
+    router.get('/tickets', [MeController, 'indexTickets'])
 
     router
       .group(() => {
@@ -56,8 +67,15 @@ router
       .group(() => {
         router.get('', [FriendController, 'indexMyFriends'])
         router.delete('/:id', [FriendController, 'delete'])
+        router.get('/posts', [FriendController, 'indexMyFriendsPosts'])
       })
       .prefix('/friends')
+
+    router
+      .group(() => {
+        router.post('/buy', [TicketController, 'buy'])
+      })
+      .prefix('/tickets')
   })
   .prefix('me')
   .middleware(middleware.auth())
@@ -79,6 +97,8 @@ router
     router.get('', [PoiController, 'index'])
     router.get('/:id', [PoiController, 'show'])
     router.get('/:id/posts', [PoiController, 'indexPosts'])
+    router.get('/:id/tickets', [PoiController, 'indexTickets'])
+    router.get('/:id/questions', [PoiController, 'indexQuestions'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -120,6 +140,51 @@ router
   .group(() => {
     router.get('', [CityController, 'index'])
     router.get('/:id/pois', [CityController, 'indexCityPois'])
+    router.get('/:id/posts', [CityController, 'indexCityPosts'])
   })
   .prefix('cities')
   .middleware(middleware.public())
+
+// TICKETS
+router
+  .group(() => {
+    router.get('/:id', [TicketController, 'show'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('/webhook', [TicketController, 'webhook'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.stripe())
+
+router
+  .group(() => {
+    router.post('', [TicketController, 'store'])
+    router.put('/:id', [TicketController, 'update'])
+    router.delete('/:id', [TicketController, 'delete'])
+    router.post('/validate', [TicketController, 'validate'])
+  })
+  .prefix('tickets')
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))
+
+// QUESTIONS
+router
+  .group(() => {
+    router.get('', [QuestionController, 'index'])
+    router.post('/:questionId/answers/:answerId', [QuestionController, 'validateAnswer'])
+  })
+  .prefix('questions')
+  .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('', [QuestionController, 'store'])
+    router.post('/image', [QuestionController, 'storeImage'])
+    router.put('/:id', [QuestionController, 'update'])
+    router.delete('/:id', [QuestionController, 'delete'])
+  })
+  .prefix('questions')
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))

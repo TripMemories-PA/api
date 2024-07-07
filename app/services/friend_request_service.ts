@@ -1,11 +1,15 @@
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
+import { UserTypes } from '../types/models/user_types.js'
 
 @inject()
 export default class FriendRequestService {
   async store(userId: number, receiverId: number) {
-    const user = await User.findOrFail(userId)
+    const user = await User.query()
+      .where('id', userId)
+      .where('userTypeId', UserTypes.USER)
+      .firstOrFail()
 
     return await user.related('sentFriendRequests').create({ receiverId })
   }
@@ -40,7 +44,10 @@ export default class FriendRequestService {
   }
 
   async index(userId: number, request: PaginateRequest) {
-    const user = await User.findOrFail(userId)
+    const user = await User.query()
+      .where('id', userId)
+      .where('userTypeId', UserTypes.USER)
+      .firstOrFail()
 
     return await user
       .related('receivedFriendRequests')

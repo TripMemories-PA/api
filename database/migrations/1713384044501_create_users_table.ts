@@ -11,6 +11,10 @@ export default class extends BaseSchema {
       table.string('password').notNullable()
       table.string('firstname').notNullable()
       table.string('lastname').notNullable()
+      table.string('customer_id').nullable()
+      table.decimal('latitude', 8, 6).nullable()
+      table.decimal('longitude', 9, 6).nullable()
+      table.integer('user_type_id').unsigned().notNullable().references('id').inTable('user_types')
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()

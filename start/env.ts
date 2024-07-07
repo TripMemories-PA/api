@@ -41,4 +41,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   MINIO_BUCKET_NAME: Env.schema.enum(['dev', 'prod'] as const),
 
   GRAPHQL_ENDPOINT: Env.schema.string(),
+
+  STRIPE_SECRET_KEY: Env.schema.string(),
+  STRIPE_WEBHOOK_SECRET: Env.schema.string(),
 })

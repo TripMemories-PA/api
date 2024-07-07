@@ -9,7 +9,7 @@ export const PostFactory = factory
 
     return {
       createdById: faker.number.int(),
-      poiId: 3407, // Arc de Triomphe
+      poiId: faker.number.int(),
       imageId: image.id,
       content: faker.lorem.paragraph(),
       title: faker.lorem.words({ min: 3, max: 4 }),

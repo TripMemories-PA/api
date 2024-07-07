@@ -72,10 +72,10 @@ export default class Poi extends BaseModel {
   declare updatedAt: DateTime
 
   @computed()
-  declare postsCount: number | undefined
+  declare postsCount: number | null
 
   @computed()
-  declare averageNote: number | undefined
+  declare averageNote: number | null
 
   @afterFind()
   static async loadPoiRelations(poi: Poi) {
@@ -84,7 +84,7 @@ export default class Poi extends BaseModel {
 
     const notes = posts.map((post) => Number(post.note))
     if (notes.length === 0) {
-      poi.averageNote = undefined
+      poi.averageNote = null
     } else {
       const averageNote = notes.reduce((acc, note) => acc + note, 0) / notes.length
       poi.averageNote = Math.round(averageNote * 10) / 10

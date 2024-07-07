@@ -7,6 +7,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 import FileService from './file_service.js'
 import Poi from '#models/poi'
 import User from '#models/user'
+import { UserTypes } from '../types/models/user_types.js'
 
 @inject()
 export default class PostService {
@@ -26,11 +27,39 @@ export default class PostService {
   }
 
   async indexUserPosts(userId: number, payload: IndexPostRequest) {
-    const user = await User.query().where('id', userId).firstOrFail()
+    const user = await User.query()
+      .where('id', userId)
+      .where('userTypeId', UserTypes.USER)
+      .firstOrFail()
 
     return await user
       .related('posts')
       .query()
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
+  }
+
+  async indexUserFriendsPosts(userId: number, payload: IndexPostRequest) {
+    const user = await User.query()
+      .where('id', userId)
+      .where('userTypeId', UserTypes.USER)
+      .firstOrFail()
+
+    const userFriends = await user.related('friends').query()
+    const friendsIds = userFriends.map((friend) => friend.id)
+
+    return await Post.query()
+      .whereIn('createdById', friendsIds)
+      .orderBy('created_at', 'desc')
+      .paginate(payload.page, payload.perPage)
+  }
+
+  async indexCityPosts(cityId: number, payload: IndexPostRequest) {
+    const pois = await Poi.query().where('cityId', cityId)
+    const poiIds = pois.map((poi) => poi.id)
+
+    return await Post.query()
+      .whereIn('poiId', poiIds)
       .orderBy('created_at', 'desc')
       .paginate(payload.page, payload.perPage)
   }
