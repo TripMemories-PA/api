@@ -125,8 +125,12 @@ export default class TicketService {
     return await UserTicket.query().where('userId', userId).where('paid', true).exec()
   }
 
-  async validate(qrCode: string) {
-    const ticket = await UserTicket.query().where('qrCode', qrCode).firstOrFail()
+  async validate(qrCode: string, poiId: number) {
+    const ticket = await UserTicket.query().where('qrCode', qrCode).preload('ticket').firstOrFail()
+
+    if (ticket.ticket.poiId !== poiId) {
+      return { valid: false, ticket }
+    }
 
     if (!ticket.paid) {
       throw new Exception('Ticket not paid', { status: 403 })
