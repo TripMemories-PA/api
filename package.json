@@ -61,6 +61,7 @@
     "@adonisjs/lucid": "^20.5.1",
     "@vercel/blob": "^0.23.2",
     "@vinejs/vine": "^2.0.0",
+    "dayjs": "^1.11.11",
     "luxon": "^3.4.4",
     "minio": "^8.0.0",
     "pg": "^8.11.5",
