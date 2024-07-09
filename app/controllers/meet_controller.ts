@@ -62,4 +62,12 @@ export default class MeetController {
 
     return response.noContent()
   }
+
+  async pay({ params, response }: HttpContext) {
+    const paymentIntent = await this.meetService.pay(params.id)
+
+    return response.ok({
+      paymentIntent: paymentIntent.client_secret,
+    })
+  }
 }

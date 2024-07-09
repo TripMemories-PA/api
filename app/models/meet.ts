@@ -13,6 +13,7 @@ import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { HttpContext } from '@adonisjs/core/http'
 import Poi from './poi.js'
 import Ticket from './ticket.js'
+import UserTicket from './user_ticket.js'
 
 export default class Meet extends BaseModel {
   @column({ isPrimary: true })
@@ -74,8 +75,11 @@ export default class Meet extends BaseModel {
   @computed()
   declare canJoin: boolean | null
 
-  @column()
+  @computed()
   declare usersCount: number | null
+
+  @computed()
+  declare isLocked: boolean
 
   @afterFind()
   static async loadMeetRelations(meet: Meet) {
@@ -93,6 +97,9 @@ export default class Meet extends BaseModel {
 
       loader.load('ticket')
     })
+
+    const paid = await UserTicket.query().where('meetId', meet.id).where('paid', true).first()
+    meet.isLocked = !!paid
 
     const users = await meet.related('users').query().where('is_banned', false)
     meet.usersCount = users.length

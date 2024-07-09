@@ -103,6 +103,10 @@ export default class MeetService {
       throw new Exception('User has not joined meet', { status: 400 })
     }
 
+    if (meet.isLocked) {
+      throw new Exception('Cannot delete user from locked meet', { status: 400 })
+    }
+
     const hasPaid = await meet
       .related('users')
       .query()
@@ -134,6 +138,10 @@ export default class MeetService {
       throw new Exception('Unauthorized', { status: 401 })
     }
 
+    if (meet.isLocked) {
+      throw new Exception('Cannot update locked meet', { status: 400 })
+    }
+
     meet.merge({
       title: payload.title ?? meet.title,
       description: payload.description ?? meet.description,
@@ -154,6 +162,10 @@ export default class MeetService {
 
     if (meet.createdById !== user.id) {
       throw new Exception('Unauthorized', { status: 401 })
+    }
+
+    if (meet.isLocked) {
+      throw new Exception('Cannot delete locked meet', { status: 400 })
     }
 
     if (meet.ticketId) {
@@ -206,6 +218,10 @@ export default class MeetService {
       throw new Exception('Cannot leave meet', { status: 400 })
     }
 
+    if (meet.isLocked) {
+      throw new Exception('Cannot leave locked meet', { status: 400 })
+    }
+
     const hasPaid = await meet
       .related('users')
       .query()
@@ -240,13 +256,13 @@ export default class MeetService {
       .where('is_banned', false)
       .first()
 
-    if (!hasJoined || hasJoined.hasPaid || !meet.ticketId) {
+    if (!hasJoined || hasJoined.hasPaid || !meet.ticketId || meet.isLocked) {
       throw new Exception('Cannot pay for meet', { status: 400 })
     }
 
     const ticket = await Ticket.query().where('id', meet.ticketId).firstOrFail()
 
-    const price = ticket.price / meet.size
+    const price = Math.floor(ticket.price / meet.size)
 
     const customerId = await this.stripeService.getCustomerId(user.id)
     const paymentIntent = await this.stripeService.createPaymentIntent(price, customerId, meet.id)
@@ -257,6 +273,7 @@ export default class MeetService {
       ticketId: meet.ticketId,
       userId: user.id,
       meetId: meet.id,
+      price,
     })
 
     return paymentIntent

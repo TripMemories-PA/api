@@ -124,7 +124,15 @@ export default class TicketService {
           .exec()
 
         if (users.length === meet.size) {
-          await UserTicket.query().where('meetId', meet.id).update({ paid: true })
+          for (const user of users) {
+            const ticket = await UserTicket.query()
+              .where('userId', user.id)
+              .where('meetId', meet.id)
+              .firstOrFail()
+
+            ticket.paid = true
+            await ticket.save()
+          }
         }
       } else {
         const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
