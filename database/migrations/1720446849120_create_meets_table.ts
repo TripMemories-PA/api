@@ -45,6 +45,7 @@ export default class extends BaseSchema {
         .notNullable()
       table.unique(['meet_id', 'user_id'])
       table.boolean('is_banned').defaultTo(false)
+      table.boolean('has_paid').defaultTo(false)
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

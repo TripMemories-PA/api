@@ -23,18 +23,13 @@ export default class MeetService {
       createdById: payload.createdById,
     })
 
-    const user = this.authService.getAuthenticatedUser()
-
-    await meet.related('users').attach([user.id])
+    await meet.related('users').attach([payload.createdById])
 
     return meet
   }
 
   async show(id: number) {
-    return await Meet.query()
-      .where('id', id)
-      .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      .firstOrFail()
+    return await Meet.query().where('id', id).firstOrFail()
   }
 
   async indexPoiMeets(poiId: number, payload: PaginateRequest) {
@@ -45,11 +40,17 @@ export default class MeetService {
       .paginate(payload.page, payload.perPage)
   }
 
+  async indexUserMeets(userId: number, payload: PaginateRequest) {
+    return await Meet.query()
+      .whereHas('users', (builder) => {
+        builder.where('user_id', userId).where('is_banned', false)
+      })
+      .orderBy('date', 'asc')
+      .paginate(payload.page, payload.perPage)
+  }
+
   async indexUsers(id: number, payload: PaginateRequest) {
-    const meet = await Meet.query()
-      .where('id', id)
-      .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      .firstOrFail()
+    const meet = await Meet.query().where('id', id).firstOrFail()
 
     return await meet
       .related('users')
@@ -74,7 +75,13 @@ export default class MeetService {
       throw new Exception('Cannot delete creator', { status: 400 })
     }
 
-    await meet.related('users').query().where('user_id', userId).update({ isBanned: true })
+    const hasJoined = await meet.related('users').query().where('user_id', userId).first()
+
+    if (!hasJoined) {
+      throw new Exception('User has not joined meet', { status: 400 })
+    }
+
+    await meet.related('users').query().where('user_id', userId).update({ is_banned: true })
   }
 
   async update(id: number, payload: UpdateMeetRequest) {
@@ -118,23 +125,20 @@ export default class MeetService {
     const meet = await Meet.query()
       .where('id', id)
       .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      .preload('users')
       .firstOrFail()
 
-    if (meet.users.length >= meet.size) {
-      throw new Exception('Meet is full', { status: 400 })
-    }
-
-    //if already joined
-    if (meet.users.find((user) => user.id === userId)) {
-      throw new Exception('Already joined meet', { status: 400 })
+    if (!meet.canJoin) {
+      throw new Exception('Cannot join meet', { status: 400 })
     }
 
     await meet.related('users').attach([userId])
   }
 
   async leave(id: number, userId: number) {
-    const meet = await Meet.query().where('id', id).firstOrFail()
+    const meet = await Meet.query()
+      .where('id', id)
+      .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
+      .firstOrFail()
 
     const hasJoined = await meet.related('users').query().where('user_id', userId).first()
 

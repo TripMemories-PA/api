@@ -54,7 +54,7 @@ export default class MeetController {
     const payload = await request.validateUsing(indexMeetUserValidator)
     const users = await this.meetService.indexUsers(params.id, payload)
 
-    return response.ok(users.toJSON())
+    return response.ok(users)
   }
 
   async deleteUser({ params, response }: HttpContext) {
