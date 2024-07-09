@@ -114,11 +114,7 @@ export default class QuestionService {
         user.score += 10
         await user.save()
       } else {
-        if (user.score < 5) {
-          user.score = 0
-        } else {
-          user.score -= 5
-        }
+        user.score = Math.max(0, user.score - 5)
         await user.save()
       }
     }
