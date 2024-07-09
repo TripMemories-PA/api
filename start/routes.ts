@@ -201,6 +201,7 @@ router
     router.delete('/:id', [MeetController, 'delete'])
     router.post('/:id/join', [MeetController, 'join'])
     router.post('/:id/leave', [MeetController, 'leave'])
+    router.post('/:id/pay', [MeetController, 'pay'])
 
     router.get('/:id/users', [MeetController, 'indexUsers'])
     router.delete('/:meetId/users/:userId', [MeetController, 'deleteUser'])

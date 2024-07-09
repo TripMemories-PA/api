@@ -10,6 +10,7 @@ export default class extends BaseSchema {
       table.string('description').notNullable()
       table.integer('size').notNullable()
       table.datetime('date').notNullable()
+      table.integer('price').nullable()
 
       table
         .integer('created_by_id')

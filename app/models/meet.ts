@@ -32,6 +32,9 @@ export default class Meet extends BaseModel {
   declare date: DateTime
 
   @column()
+  declare price: number | null
+
+  @column()
   declare createdById: number
 
   @belongsTo(() => User, {

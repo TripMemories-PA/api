@@ -38,6 +38,7 @@ export default class MeetService {
       poiId: payload.poiId,
       ticketId: payload.ticketId,
       createdById: payload.createdById,
+      price: ticket ? ticket.price : null,
     })
 
     await meet.related('users').attach([payload.createdById])
@@ -121,6 +122,7 @@ export default class MeetService {
         .firstOrFail()
 
       await this.stripeService.refundPayment(userTicket.piId)
+      await meet.related('users').query().where('user_id', userId).update({ has_paid: false })
     }
 
     await meet.related('users').query().where('user_id', userId).update({ is_banned: true })
@@ -260,12 +262,12 @@ export default class MeetService {
       throw new Exception('Cannot pay for meet', { status: 400 })
     }
 
-    const ticket = await Ticket.query().where('id', meet.ticketId).firstOrFail()
-
-    const price = Math.floor(ticket.price / meet.size)
+    const price = Math.floor(meet.price! / meet.size)
 
     const customerId = await this.stripeService.getCustomerId(user.id)
     const paymentIntent = await this.stripeService.createPaymentIntent(price, customerId, meet.id)
+
+    await UserTicket.query().where('userId', user.id).where('meetId', meet.id).delete()
 
     await UserTicket.create({
       piId: paymentIntent.id,
