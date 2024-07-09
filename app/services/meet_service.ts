@@ -7,16 +7,33 @@ import { Exception } from '@adonisjs/core/exceptions'
 import dayjs from 'dayjs'
 import AuthService from './auth_service.js'
 import { inject } from '@adonisjs/core'
+import StripeService from './stripe_service.js'
+import Ticket from '#models/ticket'
+import UserTicket from '#models/user_ticket'
+import { randomUUID } from 'node:crypto'
 
 @inject()
 export default class MeetService {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private stripeService: StripeService
+  ) {}
 
   async create(payload: CreateMeetRequest) {
+    let ticket = null
+
+    if (payload.ticketId) {
+      ticket = await Ticket.query().where('id', payload.ticketId).firstOrFail()
+
+      if (ticket.quantity === 0) {
+        throw new Exception('No tickets available', { status: 400 })
+      }
+    }
+
     const meet = await Meet.create({
       title: payload.title,
       description: payload.description,
-      size: payload.size,
+      size: ticket ? ticket.groupSize : payload.size,
       date: DateTime.fromJSDate(payload.date),
       poiId: payload.poiId,
       ticketId: payload.ticketId,
@@ -24,6 +41,11 @@ export default class MeetService {
     })
 
     await meet.related('users').attach([payload.createdById])
+
+    if (ticket) {
+      ticket.quantity -= 1
+      await ticket.save()
+    }
 
     return meet
   }
@@ -81,6 +103,22 @@ export default class MeetService {
       throw new Exception('User has not joined meet', { status: 400 })
     }
 
+    const hasPaid = await meet
+      .related('users')
+      .query()
+      .where('user_id', userId)
+      .where('has_paid', true)
+      .first()
+
+    if (hasPaid) {
+      const userTicket = await UserTicket.query()
+        .where('meetId', meet.id)
+        .where('userId', userId)
+        .firstOrFail()
+
+      await this.stripeService.refundPayment(userTicket.piId)
+    }
+
     await meet.related('users').query().where('user_id', userId).update({ is_banned: true })
   }
 
@@ -118,6 +156,23 @@ export default class MeetService {
       throw new Exception('Unauthorized', { status: 401 })
     }
 
+    if (meet.ticketId) {
+      const hasPaidUsers = await meet.related('users').query().where('has_paid', true).exec()
+
+      for (const hasPaidUser of hasPaidUsers) {
+        const userTicket = await UserTicket.query()
+          .where('meetId', meet.id)
+          .where('userId', hasPaidUser.id)
+          .firstOrFail()
+
+        await this.stripeService.refundPayment(userTicket.piId)
+      }
+
+      const ticket = await Ticket.query().where('id', meet.ticketId).firstOrFail()
+      ticket.quantity += 1
+      await ticket.save()
+    }
+
     await meet.delete()
   }
 
@@ -140,12 +195,70 @@ export default class MeetService {
       .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
       .firstOrFail()
 
-    const hasJoined = await meet.related('users').query().where('user_id', userId).first()
+    const hasJoined = await meet
+      .related('users')
+      .query()
+      .where('user_id', userId)
+      .where('is_banned', false)
+      .first()
 
     if (meet.createdById === userId || !hasJoined) {
       throw new Exception('Cannot leave meet', { status: 400 })
     }
 
+    const hasPaid = await meet
+      .related('users')
+      .query()
+      .where('user_id', userId)
+      .where('has_paid', true)
+      .first()
+
+    if (hasPaid) {
+      const userTicket = await UserTicket.query()
+        .where('meetId', meet.id)
+        .where('userId', userId)
+        .firstOrFail()
+
+      await this.stripeService.refundPayment(userTicket.piId)
+    }
+
     await meet.related('users').detach([userId])
+  }
+
+  async pay(id: number) {
+    const meet = await Meet.query()
+      .where('id', id)
+      .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
+      .firstOrFail()
+
+    const user = this.authService.getAuthenticatedUser()
+
+    const hasJoined = await meet
+      .related('users')
+      .query()
+      .where('user_id', user.id)
+      .where('is_banned', false)
+      .first()
+
+    if (!hasJoined || hasJoined.hasPaid || !meet.ticketId) {
+      throw new Exception('Cannot pay for meet', { status: 400 })
+    }
+
+    const ticket = await Ticket.query().where('id', meet.ticketId).firstOrFail()
+
+    const price = ticket.price / meet.size
+
+    const customerId = await this.stripeService.getCustomerId(user.id)
+    const paymentIntent = await this.stripeService.createPaymentIntent(price, customerId, meet.id)
+
+    await UserTicket.create({
+      piId: paymentIntent.id,
+      qrCode: randomUUID(),
+      ticketId: meet.ticketId,
+      userId: user.id,
+      meetId: meet.id,
+    })
+
+    return paymentIntent
   }
 }

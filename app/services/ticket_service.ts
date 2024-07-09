@@ -7,8 +7,8 @@ import StripeService from './stripe_service.js'
 import UserTicket from '#models/user_ticket'
 import { randomUUID } from 'node:crypto'
 import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
-import { Exception } from '@adonisjs/core/exceptions'
 import { DateTime } from 'luxon'
+import Meet from '#models/meet'
 
 @inject()
 export default class TicketService {
@@ -104,19 +104,39 @@ export default class TicketService {
   async webhook(payload: any) {
     if (payload.type === 'payment_intent.succeeded') {
       const paymentIntent = payload.data.object
+      const metadata = paymentIntent.metadata
 
-      const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
+      if (metadata.meetId) {
+        const meet = await Meet.query().where('id', metadata.meetId).firstOrFail()
+        const userTicket = await UserTicket.query().where('piId', paymentIntent.id).firstOrFail()
 
-      for (const userTicket of userTickets) {
-        userTicket.paid = true
-        await userTicket.save()
+        await meet
+          .related('users')
+          .query()
+          .where('user_id', userTicket.userId)
+          .update({ has_paid: true })
 
-        const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
-        ticket.quantity -= 1
-        if (ticket.quantity <= 0) {
-          ticket.quantity = 0
+        const users = await meet
+          .related('users')
+          .query()
+          .where('has_paid', true)
+          .where('is_banned', false)
+          .exec()
+
+        if (users.length === meet.size) {
+          await UserTicket.query().where('meetId', meet.id).update({ paid: true })
         }
-        await ticket.save()
+      } else {
+        const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
+
+        for (const userTicket of userTickets) {
+          userTicket.paid = true
+          await userTicket.save()
+
+          const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
+          ticket.quantity = Math.max(0, ticket.quantity - 1)
+          await ticket.save()
+        }
       }
     }
   }
@@ -126,14 +146,14 @@ export default class TicketService {
   }
 
   async validate(qrCode: string, poiId: number) {
-    const ticket = await UserTicket.query().where('qrCode', qrCode).preload('ticket').firstOrFail()
+    const ticket = await UserTicket.query()
+      .where('qrCode', qrCode)
+      .where('paid', true)
+      .preload('ticket')
+      .firstOrFail()
 
     if (ticket.ticket.poiId !== poiId) {
       return { valid: false, ticket }
-    }
-
-    if (!ticket.paid) {
-      throw new Exception('Ticket not paid', { status: 403 })
     }
 
     if (ticket.usedAt) {
