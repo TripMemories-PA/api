@@ -1,6 +1,8 @@
 import { UserFactory } from '#database/factories/user_factory'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { UserTypes } from '../../app/types/models/user_types.js'
+import { MeetFactory } from '#database/factories/meet_factory'
+import { MeetTicketFactory } from '#database/factories/meet_ticket_factory'
 
 export default class extends BaseSeeder {
   async run() {
@@ -43,6 +45,20 @@ export default class extends BaseSeeder {
       for (const friend of friends) {
         await friend.related('friends').attach([user.id])
       }
+
+      const meet = await MeetFactory.merge({
+        poiId: defaultPoiId,
+        createdById: user.id,
+      }).create()
+
+      await meet.related('users').attach([user.id])
+
+      const meetTicket = await MeetTicketFactory.merge({
+        poiId: defaultPoiId,
+        createdById: user.id,
+      }).create()
+
+      await meetTicket.related('users').attach([user.id])
     }
 
     await UserFactory.merge({

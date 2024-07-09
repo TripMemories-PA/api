@@ -26,14 +26,18 @@ export const storeMeetValidator = vine.compile(
     }),
     ticketId: vine
       .number()
-      .exists(async (_, value) => {
+      .exists(async (_, value, field) => {
         if (!value) {
           return true
         }
 
-        const ticket = await Ticket.query().where('id', value).first()
+        const ticket = await Ticket.query().where('id', value).where('quantity', '>', 0).first()
 
-        return !!ticket
+        if (!ticket || ticket.poiId !== field.parent.poiId) {
+          return false
+        }
+
+        return true
       })
       .nullable(),
   })
