@@ -121,11 +121,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare posts: HasMany<typeof Post>
 
   @computed()
-  get isBanned() {
-    return this.$extras.pivot_is_banned
-  }
-
-  @computed()
   get hasPaid() {
     return this.$extras.pivot_has_paid
   }
