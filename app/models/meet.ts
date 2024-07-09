@@ -31,7 +31,11 @@ export default class Meet extends BaseModel {
   @column()
   declare date: DateTime
 
-  @column()
+  @column({
+    serialize(value) {
+      return (value / 100).toFixed(2)
+    },
+  })
   declare price: number | null
 
   @column()
