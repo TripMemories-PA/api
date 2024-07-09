@@ -24,10 +24,6 @@ export default class MeetService {
 
     if (payload.ticketId) {
       ticket = await Ticket.query().where('id', payload.ticketId).firstOrFail()
-
-      if (ticket.quantity === 0) {
-        throw new Exception('No tickets available', { status: 400 })
-      }
     }
 
     const meet = await Meet.create({
