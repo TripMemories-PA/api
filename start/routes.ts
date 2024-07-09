@@ -9,6 +9,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { UserTypes } from '../app/types/models/user_types.js'
+const MeetController = () => import('#controllers/meet_controller')
 const QuestionController = () => import('#controllers/question_controller')
 const TicketController = () => import('#controllers/ticket_controller')
 const CityController = () => import('#controllers/city_controller')
@@ -53,6 +54,7 @@ router
     router.post('/banner', [MeController, 'storeBanner'])
     router.get('/posts', [MeController, 'indexPosts'])
     router.get('/tickets', [MeController, 'indexTickets'])
+    router.get('/meets', [MeController, 'indexMeets'])
 
     router
       .group(() => {
@@ -99,6 +101,7 @@ router
     router.get('/:id/posts', [PoiController, 'indexPosts'])
     router.get('/:id/tickets', [PoiController, 'indexTickets'])
     router.get('/:id/questions', [PoiController, 'indexQuestions'])
+    router.get('/:id/meets', [PoiController, 'indexMeets'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -188,3 +191,20 @@ router
   })
   .prefix('questions')
   .middleware(middleware.auth({ userTypes: [UserTypes.POI] }))
+
+// MEETS
+router
+  .group(() => {
+    router.post('', [MeetController, 'store'])
+    router.get('/:id', [MeetController, 'show'])
+    router.put('/:id', [MeetController, 'update'])
+    router.delete('/:id', [MeetController, 'delete'])
+    router.post('/:id/join', [MeetController, 'join'])
+    router.post('/:id/leave', [MeetController, 'leave'])
+    router.post('/:id/pay', [MeetController, 'pay'])
+
+    router.get('/:id/users', [MeetController, 'indexUsers'])
+    router.delete('/:meetId/users/:userId', [MeetController, 'deleteUser'])
+  })
+  .prefix('meets')
+  .middleware(middleware.auth())

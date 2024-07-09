@@ -121,6 +121,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare posts: HasMany<typeof Post>
 
   @computed()
+  get hasPaid() {
+    return this.$extras.pivot_has_paid
+  }
+
+  @computed()
   declare isFriend: boolean | null
 
   @computed()

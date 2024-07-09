@@ -1,7 +1,9 @@
+import MeetService from '#services/meet_service'
 import PoiService from '#services/poi_service'
 import PostService from '#services/post_service'
 import QuestionService from '#services/question_service'
 import TicketService from '#services/ticket_service'
+import { indexMeetValidator } from '#validators/meet/index_meet_validator'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
 import { indexQuestionValidator } from '#validators/question/index_question_validator'
@@ -14,7 +16,8 @@ export default class PoiController {
     protected poiService: PoiService,
     protected postService: PostService,
     protected ticketSerivce: TicketService,
-    protected questionService: QuestionService
+    protected questionService: QuestionService,
+    protected meetService: MeetService
   ) {}
 
   async index({ response, request }: HttpContext) {
@@ -50,5 +53,12 @@ export default class PoiController {
     const questions = await this.questionService.indexPoiQuestions(params.id, payload)
 
     return response.ok(questions.toJSON())
+  }
+
+  async indexMeets({ response, params, request }: HttpContext) {
+    const payload = await request.validateUsing(indexMeetValidator)
+    const meets = await this.meetService.indexPoiMeets(params.id, payload)
+
+    return response.ok(meets.toJSON())
   }
 }

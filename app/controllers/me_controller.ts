@@ -1,6 +1,8 @@
+import MeetService from '#services/meet_service'
 import PostService from '#services/post_service'
 import TicketService from '#services/ticket_service'
 import UserService from '#services/user_service'
+import { indexMeetValidator } from '#validators/meet/index_meet_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
 import { storeAvatarValidator } from '#validators/user/store_avatar_validator'
 import { storeBannerValidator } from '#validators/user/store_banner_validator'
@@ -13,7 +15,8 @@ export default class MeController {
   constructor(
     protected userService: UserService,
     protected postService: PostService,
-    protected ticketService: TicketService
+    protected ticketService: TicketService,
+    protected meetService: MeetService
   ) {}
 
   async show({ response, auth }: HttpContext) {
@@ -66,5 +69,13 @@ export default class MeController {
     const tickets = await this.ticketService.indexUserTickets(auth.user!.id)
 
     return response.ok(tickets)
+  }
+
+  async indexMeets({ response, auth, request }: HttpContext) {
+    const payload = await request.validateUsing(indexMeetValidator)
+
+    const meets = await this.meetService.indexUserMeets(auth.user!.id, payload)
+
+    return response.ok(meets.toJSON())
   }
 }

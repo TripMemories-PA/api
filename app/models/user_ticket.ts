@@ -3,6 +3,7 @@ import { afterFetch, afterFind, BaseModel, belongsTo, column } from '@adonisjs/l
 import Ticket from './ticket.js'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
+import Meet from './meet.js'
 
 export default class UserTicket extends BaseModel {
   @column({ isPrimary: true })
@@ -35,6 +36,14 @@ export default class UserTicket extends BaseModel {
     foreignKey: 'userId',
   })
   declare user: BelongsTo<typeof User>
+
+  @column()
+  declare meetId: number | null
+
+  @belongsTo(() => Meet, {
+    foreignKey: 'meetId',
+  })
+  declare meet: BelongsTo<typeof Meet>
 
   @column({ serializeAs: null })
   declare price: number
