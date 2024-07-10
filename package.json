@@ -59,6 +59,7 @@
     "@adonisjs/core": "^6.6.0",
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^20.5.1",
+    "@google-cloud/vision": "^4.3.0",
     "@vercel/blob": "^0.23.2",
     "@vinejs/vine": "^2.0.0",
     "dayjs": "^1.11.11",

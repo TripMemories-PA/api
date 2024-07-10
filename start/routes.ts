@@ -9,6 +9,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { UserTypes } from '../app/types/models/user_types.js'
+const QuestController = () => import('#controllers/quest_controller')
 const MeetController = () => import('#controllers/meet_controller')
 const QuestionController = () => import('#controllers/question_controller')
 const TicketController = () => import('#controllers/ticket_controller')
@@ -207,4 +208,19 @@ router
     router.delete('/:meetId/users/:userId', [MeetController, 'deleteUser'])
   })
   .prefix('meets')
+  .middleware(middleware.auth())
+
+// QUESTS
+
+router
+  .group(() => {
+    router.post('/image', [QuestController, 'storeImage'])
+    router.post('/', [QuestController, 'store'])
+    router.get('/', [QuestController, 'index'])
+    router.get('/:id', [QuestController, 'show'])
+    router.put('/:id', [QuestController, 'update'])
+    router.delete('/:id', [QuestController, 'delete'])
+    router.post('/:id/validate', [QuestController, 'validate'])
+  })
+  .prefix('quests')
   .middleware(middleware.auth())

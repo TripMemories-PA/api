@@ -21,6 +21,7 @@ import Post from './post.js'
 import UserType from './user_type.js'
 import Poi from './poi.js'
 import UserTicket from './user_ticket.js'
+import Quest from './quest.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -114,6 +115,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
     serializeAs: null,
   })
   declare friends: ManyToMany<typeof User>
+
+  @manyToMany(() => Quest, {
+    pivotTable: 'quests_users',
+    localKey: 'id',
+    pivotForeignKey: 'user_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'quest_id',
+    serializeAs: null,
+  })
+  declare quests: ManyToMany<typeof Quest>
 
   @hasMany(() => Post, {
     foreignKey: 'createdById',
