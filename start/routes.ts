@@ -98,6 +98,7 @@ router
 router
   .group(() => {
     router.get('', [PoiController, 'index'])
+    router.get('/types', [PoiController, 'indexTypes'])
     router.get('/:id', [PoiController, 'show'])
     router.get('/:id/posts', [PoiController, 'indexPosts'])
     router.get('/:id/tickets', [PoiController, 'indexTickets'])
@@ -106,6 +107,21 @@ router
   })
   .prefix('pois')
   .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.post('/cover', [PoiController, 'storeCover'])
+    router.put('/:id', [PoiController, 'update'])
+  })
+  .prefix('pois')
+  .middleware(middleware.auth({ userTypes: [UserTypes.POI, UserTypes.ADMIN] }))
+
+router
+  .group(() => {
+    router.post('', [PoiController, 'store'])
+  })
+  .prefix('pois')
+  .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))
 
 // POSTS
 router
