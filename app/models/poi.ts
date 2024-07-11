@@ -51,7 +51,7 @@ export default class Poi extends BaseModel {
   declare address: string
 
   @column({ serializeAs: null })
-  declare reference: string
+  declare reference: string | null
 
   @column()
   declare typeId: number
