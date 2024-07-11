@@ -62,7 +62,7 @@ export default class QuestService {
     const labels = await this.googleVisionService.labelDetection(file)
 
     if (!labels?.includes(quest.label)) {
-      return false
+      return { valid: false }
     }
 
     user.score += 50
@@ -70,6 +70,6 @@ export default class QuestService {
 
     user.related('quests').attach([quest.id])
 
-    return true
+    return { valid: true }
   }
 }
