@@ -122,7 +122,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotForeignKey: 'user_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'quest_id',
-    serializeAs: null,
   })
   declare quests: ManyToMany<typeof Quest>
 

@@ -11,9 +11,7 @@ export default class GoogleVisionService {
   }
 
   async labelDetection(file: UploadFile) {
-    const url =
-      'https://cdn-europe1.lanmedia.fr/var/europe1/storage/images/europe1/culture/impression-soleil-levant-le-celebre-tableau-de-monet-rejoint-le-havre-3429503/44044928-1-fre-FR/Impression-Soleil-Levant-le-celebre-tableau-de-Monet-rejoint-Le-Havre.jpg'
-    const [result] = await this.client.webDetection(url)
+    const [result] = await this.client.webDetection(file.url)
 
     return result.webDetection?.webEntities?.map((entity) => entity.description)
   }

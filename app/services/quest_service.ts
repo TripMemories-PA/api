@@ -41,7 +41,7 @@ export default class QuestService {
   }
 
   async show(id: number) {
-    return Quest.findOrFail(id)
+    return await Quest.findOrFail(id)
   }
 
   async delete(id: number) {
@@ -51,7 +51,7 @@ export default class QuestService {
   }
 
   async validate(id: number, file: UploadFile) {
-    const quest = await Quest.findOrFail(id)
+    const quest = await Quest.query().where('id', id).firstOrFail()
 
     const user = this.authService.getAuthenticatedUser()
 

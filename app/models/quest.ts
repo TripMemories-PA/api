@@ -54,9 +54,9 @@ export default class Quest extends BaseModel {
         return
       }
 
-      const user = await currentUser.related('quests').query().where('quest_id', quest.id).first()
+      const done = await currentUser.related('quests').query().where('quest_id', quest.id).exec()
 
-      quest.done = !!user
+      quest.done = !!done.length
     } catch (error) {
       quest.done = null
     }
