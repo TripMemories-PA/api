@@ -37,7 +37,11 @@ export default class MessageService {
 
     const isFriend = await receiver.related('friends').query().where('friend_id', senderId).first()
 
-    this.pusherService.sendMessage(isFriend.channel, 'message', content)
+    if (!isFriend) {
+      throw new Exception('You are not friends with this user', { status: 403 })
+    }
+
+    this.pusherService.sendMessage(isFriend.channel!, 'message', content)
 
     return await Message.create({
       senderId,

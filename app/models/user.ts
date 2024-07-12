@@ -193,7 +193,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
       if (friends) {
         console.log(friends.$extras)
-        user.channel = friends.$extras.channel
+        user.channel = friends.$extras.pivot_channel
       } else {
         user.channel = null
       }
