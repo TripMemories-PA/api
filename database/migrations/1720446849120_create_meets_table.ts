@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.integer('size').notNullable()
       table.datetime('date').notNullable()
       table.integer('price').nullable()
+      table.string('channel').notNullable()
 
       table
         .integer('created_by_id')

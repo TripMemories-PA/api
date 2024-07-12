@@ -82,7 +82,6 @@ export default class PoiService {
   }
 
   async indexTypes() {
-    console.log('indexTypes')
     return await PoiType.all()
   }
 }
