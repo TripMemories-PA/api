@@ -23,7 +23,7 @@ export default class MessageService {
       throw new Exception('You are not part of this meet', { status: 403 })
     }
 
-    this.pusherService.sendMessage(`meet-${meetId}`, 'message', content)
+    this.pusherService.sendMessage(meet.channel, 'message', content)
 
     return await Message.create({
       meetId,
@@ -34,8 +34,10 @@ export default class MessageService {
 
   async createPrivateMessage(senderId: number, receiverId: number, content: string) {
     const receiver = await User.findOrFail(receiverId)
-    this.pusherService.sendMessage(`private-${senderId}-${receiverId}`, 'message', content)
-    this.pusherService.sendMessage(`private-${receiverId}-${senderId}`, 'message', content)
+
+    const isFriend = await receiver.related('friends').query().where('friend_id', senderId).first()
+
+    this.pusherService.sendMessage(isFriend.channel, 'message', content)
 
     return await Message.create({
       senderId,

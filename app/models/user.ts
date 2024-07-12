@@ -149,6 +149,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @computed()
   declare poisCount: number | null
 
+  @computed()
+  declare channel: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -176,6 +179,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
         user.isFriend = null
         user.hasSentFriendRequest = null
         user.hasReceivedFriendRequest = null
+        user.channel = null
         return
       }
 
@@ -186,6 +190,13 @@ export default class User extends compose(BaseModel, AuthFinder) {
         .first()
 
       user.isFriend = !!friends
+
+      if (friends) {
+        console.log(friends.$extras)
+        user.channel = friends.$extras.channel
+      } else {
+        user.channel = null
+      }
 
       const sentFriendRequest = await user
         .related('sentFriendRequests')
@@ -205,6 +216,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
       user.isFriend = null
       user.hasSentFriendRequest = null
       user.hasReceivedFriendRequest = null
+      user.channel = null
     }
   }
 

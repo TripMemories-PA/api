@@ -11,6 +11,7 @@ export const MeetFactory = factory
       date: DateTime.fromJSDate(faker.date.soon({ days: 7 })),
       createdById: faker.number.int(),
       poiId: faker.number.int(),
+      channel: faker.string.uuid(),
     }
   })
   .build()

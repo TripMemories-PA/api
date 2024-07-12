@@ -16,6 +16,7 @@ export const MeetTicketFactory = factory
       poiId: faker.number.int(),
       ticketId: ticket!.id,
       price: ticket!.price,
+      channel: faker.string.uuid(),
     }
   })
   .build()
