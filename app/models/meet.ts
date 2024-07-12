@@ -6,14 +6,16 @@ import {
   belongsTo,
   column,
   computed,
+  hasMany,
   manyToMany,
 } from '@adonisjs/lucid/orm'
 import User from './user.js'
-import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { HttpContext } from '@adonisjs/core/http'
 import Poi from './poi.js'
 import Ticket from './ticket.js'
 import UserTicket from './user_ticket.js'
+import Message from './message.js'
 
 export default class Meet extends BaseModel {
   @column({ isPrimary: true })
@@ -64,6 +66,11 @@ export default class Meet extends BaseModel {
     foreignKey: 'ticketId',
   })
   declare ticket: BelongsTo<typeof Ticket>
+
+  @hasMany(() => Message, {
+    foreignKey: 'meetId',
+  })
+  declare messages: HasMany<typeof Message>
 
   @manyToMany(() => User, {
     pivotTable: 'meets_users',

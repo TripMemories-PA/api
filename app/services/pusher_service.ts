@@ -1,3 +1,4 @@
+import Message from '#models/message'
 import env from '#start/env'
 import Pusher from 'pusher'
 
@@ -14,9 +15,9 @@ export default class PusherService {
     })
   }
 
-  sendMessage(channel: string, event: string, message: string) {
-    return this.client.trigger(channel, event, {
-      message,
-    })
+  async sendMessage(channel: string, event: string, messageId: number) {
+    const message = await Message.query().where('id', messageId).firstOrFail()
+
+    return await this.client.trigger(channel, event, message)
   }
 }

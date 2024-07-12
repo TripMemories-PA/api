@@ -9,6 +9,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { UserTypes } from '../app/types/models/user_types.js'
+const MessageController = () => import('#controllers/message_controller')
 const QuestController = () => import('#controllers/quest_controller')
 const MeetController = () => import('#controllers/meet_controller')
 const QuestionController = () => import('#controllers/question_controller')
@@ -93,6 +94,14 @@ router
   })
   .prefix('users')
   .middleware(middleware.public())
+
+router
+  .group(() => {
+    router.get('/:id/messages', [MessageController, 'indexPrivateMessages'])
+    router.post('/:id/messages', [MessageController, 'storePrivateMessage'])
+  })
+  .prefix('users')
+  .middleware(middleware.auth())
 
 // POIS
 router
@@ -222,6 +231,9 @@ router
 
     router.get('/:id/users', [MeetController, 'indexUsers'])
     router.delete('/:meetId/users/:userId', [MeetController, 'deleteUser'])
+
+    router.get('/:id/messages', [MessageController, 'indexMeetMessages'])
+    router.post('/:id/messages', [MessageController, 'storeMeetMessage'])
   })
   .prefix('meets')
   .middleware(middleware.auth())
