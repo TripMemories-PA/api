@@ -83,10 +83,13 @@ export default class Meet extends BaseModel {
   declare canJoin: boolean | null
 
   @computed()
-  declare usersCount: number | null
+  declare usersCount: number
 
   @computed()
   declare isLocked: boolean
+
+  @computed()
+  declare hasJoined: boolean | null
 
   @afterFind()
   static async loadMeetRelations(meet: Meet) {
@@ -117,10 +120,25 @@ export default class Meet extends BaseModel {
 
       if (!currentUser) {
         meet.canJoin = null
+        meet.hasJoined = null
         return
       }
 
       const hasJoined = await meet.related('users').query().where('user_id', currentUser.id).first()
+      const isBanned = await meet
+        .related('users')
+        .query()
+        .where('user_id', currentUser.id)
+        .where('is_banned', true)
+        .first()
+
+      if (hasJoined) {
+        if (isBanned) {
+          meet.hasJoined = false
+        } else {
+          meet.hasJoined = true
+        }
+      }
 
       if (hasJoined || meet.usersCount >= meet.size) {
         meet.canJoin = false
@@ -129,6 +147,7 @@ export default class Meet extends BaseModel {
       }
     } catch {
       meet.canJoin = null
+      meet.hasJoined = null
     }
   }
 
