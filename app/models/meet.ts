@@ -39,6 +39,9 @@ export default class Meet extends BaseModel {
   declare price: number | null
 
   @column()
+  declare channel: string
+
+  @column()
   declare createdById: number
 
   @belongsTo(() => User, {
@@ -83,7 +86,7 @@ export default class Meet extends BaseModel {
   declare canJoin: boolean | null
 
   @computed()
-  declare usersCount: number | null
+  declare usersCount: number
 
   @computed()
   declare isLocked: boolean

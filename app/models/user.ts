@@ -112,7 +112,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotForeignKey: 'user_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'friend_id',
-    serializeAs: null,
+    pivotColumns: ['channel'],
+    pivotTimestamps: true,
   })
   declare friends: ManyToMany<typeof User>
 
@@ -122,6 +123,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotForeignKey: 'user_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'quest_id',
+    pivotTimestamps: true,
   })
   declare quests: ManyToMany<typeof Quest>
 

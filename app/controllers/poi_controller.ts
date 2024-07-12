@@ -92,7 +92,6 @@ export default class PoiController {
   }
 
   async indexTypes({ response }: HttpContext) {
-    console.log('indexTypes')
     const types = await this.poiService.indexTypes()
 
     return response.ok(types)

@@ -44,4 +44,9 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   STRIPE_SECRET_KEY: Env.schema.string(),
   STRIPE_WEBHOOK_SECRET: Env.schema.string(),
+
+  PUSHER_APP_ID: Env.schema.string(),
+  PUSHER_KEY: Env.schema.string(),
+  PUSHER_SECRET: Env.schema.string(),
+  PUSHER_CLUSTER: Env.schema.string(),
 })

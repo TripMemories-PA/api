@@ -35,6 +35,7 @@ export default class MeetService {
       ticketId: payload.ticketId,
       createdById: payload.createdById,
       price: ticket ? ticket.price : null,
+      channel: randomUUID(),
     })
 
     await meet.related('users').attach([payload.createdById])
