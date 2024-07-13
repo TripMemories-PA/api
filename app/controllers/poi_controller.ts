@@ -2,6 +2,7 @@ import FileService from '#services/file_service'
 import MeetService from '#services/meet_service'
 import PoiService from '#services/poi_service'
 import PostService from '#services/post_service'
+import QuestService from '#services/quest_service'
 import QuestionService from '#services/question_service'
 import TicketService from '#services/ticket_service'
 import { indexMeetValidator } from '#validators/meet/index_meet_validator'
@@ -10,6 +11,7 @@ import { storePoiCoverValidator } from '#validators/poi/store_poi_cover_validato
 import { storePoiValidator } from '#validators/poi/store_poi_validator'
 import { updatePoiValidator } from '#validators/poi/update_poi_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
+import { indexQuestValidator } from '#validators/quest/index_quest_validator'
 import { indexQuestionValidator } from '#validators/question/index_question_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
@@ -22,7 +24,8 @@ export default class PoiController {
     protected ticketSerivce: TicketService,
     protected questionService: QuestionService,
     protected meetService: MeetService,
-    protected fileService: FileService
+    protected fileService: FileService,
+    protected questService: QuestService
   ) {}
 
   async index({ response, request }: HttpContext) {
@@ -95,5 +98,13 @@ export default class PoiController {
     const types = await this.poiService.indexTypes()
 
     return response.ok(types)
+  }
+
+  async indexQuests({ response, request, params }: HttpContext) {
+    const payload = await request.validateUsing(indexQuestValidator)
+
+    const quests = await this.questService.indexPoiQuests(params.id, payload)
+
+    return response.ok(quests.toJSON())
   }
 }

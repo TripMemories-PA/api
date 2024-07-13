@@ -113,6 +113,7 @@ router
     router.get('/:id/tickets', [PoiController, 'indexTickets'])
     router.get('/:id/questions', [PoiController, 'indexQuestions'])
     router.get('/:id/meets', [PoiController, 'indexMeets'])
+    router.get('/:id/quests', [PoiController, 'indexQuests'])
   })
   .prefix('pois')
   .middleware(middleware.public())
@@ -244,7 +245,6 @@ router
   .group(() => {
     router.post('/image', [QuestController, 'storeImage'])
     router.post('/', [QuestController, 'store'])
-    router.get('/', [QuestController, 'index'])
     router.get('/:id', [QuestController, 'show'])
     router.put('/:id', [QuestController, 'update'])
     router.delete('/:id', [QuestController, 'delete'])
