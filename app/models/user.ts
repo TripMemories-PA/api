@@ -22,6 +22,7 @@ import UserType from './user_type.js'
 import Poi from './poi.js'
 import UserTicket from './user_ticket.js'
 import Quest from './quest.js'
+import { UserTypes } from '../types/models/user_types.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -152,6 +153,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @computed()
   declare channel: string | null
 
+  @computed()
+  declare stripeId: string | undefined | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -180,7 +184,13 @@ export default class User extends compose(BaseModel, AuthFinder) {
         user.hasSentFriendRequest = null
         user.hasReceivedFriendRequest = null
         user.channel = null
+        user.stripeId = undefined
         return
+      }
+
+      if (currentUser.userTypeId === UserTypes.ADMIN) {
+        console.log('ADMIN')
+        user.stripeId = user.customerId
       }
 
       const friends = await user
@@ -216,6 +226,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
       user.hasSentFriendRequest = null
       user.hasReceivedFriendRequest = null
       user.channel = null
+      user.stripeId = undefined
     }
   }
 
