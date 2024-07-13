@@ -33,14 +33,6 @@ export default class QuestController {
     return response.created(quest.toJSON())
   }
 
-  async index({ response, request }: HttpContext) {
-    const payload = await request.validateUsing(indexQuestValidator)
-
-    const quests = await this.questService.index(payload)
-
-    return response.ok(quests.toJSON())
-  }
-
   async show({ response, params }: HttpContext) {
     const quest = await this.questService.show(params.id)
 
