@@ -1,7 +1,6 @@
 import FileService from '#services/file_service'
 import GoogleVisionService from '#services/google_vision_service'
 import QuestService from '#services/quest_service'
-import { indexQuestValidator } from '#validators/quest/index_quest_validator'
 import { storeQuestImageValidator } from '#validators/quest/store_quest_image_validator'
 import { storeQuestValidator } from '#validators/quest/store_quest_validator'
 import { updateQuestValidator } from '#validators/quest/update_quest_validator'
