@@ -14,6 +14,7 @@ import PoiType from './poi_type.js'
 import Post from './post.js'
 import City from './city.js'
 import Question from './question.js'
+import Quest from './quest.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -70,6 +71,11 @@ export default class Poi extends BaseModel {
     foreignKey: 'poiId',
   })
   declare questions: HasMany<typeof Question>
+
+  @hasMany(() => Quest, {
+    foreignKey: 'poiId',
+  })
+  declare quests: HasMany<typeof Quest>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
