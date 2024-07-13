@@ -185,9 +185,6 @@ export default class extends BaseSeeder {
           from: $from,
           filters: [
             {
-              dc_identifier: {
-                _ne: "PNAPIC060V503HDW"
-              }
               hasDescription: {
                 shortDescription: {
                 }
