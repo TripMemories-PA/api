@@ -1,6 +1,9 @@
 import Poi from '#models/poi'
 import db from '@adonisjs/lucid/services/db'
 import { IndexPoiRequest } from '../types/requests/poi/index_poi_request.js'
+import { CreatePoiRequest } from '../types/requests/poi/create_poi_request.js'
+import PoiType from '#models/poi_type'
+import { UpdatePoiRequest } from '../types/requests/poi/update_poi_request.js'
 
 export default class PoiService {
   async index(payload: IndexPoiRequest) {
@@ -49,5 +52,36 @@ export default class PoiService {
 
   async show(id: number) {
     return await Poi.query().where('id', id).firstOrFail()
+  }
+
+  async create(payload: CreatePoiRequest) {
+    return await Poi.create({
+      name: payload.name,
+      description: payload.description,
+      coverId: payload.coverId,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      cityId: payload.cityId,
+      address: payload.address,
+      typeId: payload.typeId,
+    })
+  }
+
+  async update(id: number, payload: UpdatePoiRequest) {
+    const poi = await Poi.findOrFail(id)
+
+    poi.merge({
+      name: payload.name ?? poi.name,
+      description: payload.description ?? poi.description,
+      coverId: payload.coverId ?? poi.coverId,
+    })
+
+    await poi.save()
+
+    return poi
+  }
+
+  async indexTypes() {
+    return await PoiType.all()
   }
 }

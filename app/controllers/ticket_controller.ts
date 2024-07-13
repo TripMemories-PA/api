@@ -57,10 +57,11 @@ export default class TicketController {
     return response.noContent()
   }
 
-  async validate({ request, response }: HttpContext) {
+  async validate({ request, response, auth }: HttpContext) {
     const { qrCode } = await request.validateUsing(validateTicketValidator)
+    const poiId = auth.user!.poiId
 
-    const res = await this.ticketService.validate(qrCode)
+    const res = await this.ticketService.validate(qrCode, poiId)
 
     return response.ok(res)
   }

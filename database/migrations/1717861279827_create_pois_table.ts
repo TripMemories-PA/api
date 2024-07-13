@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.integer('type_id').unsigned().references('poi_types.id')
       table.decimal('latitude', 8, 6).notNullable()
       table.decimal('longitude', 9, 6).notNullable()
-      table.string('reference').notNullable()
+      table.string('reference').nullable()
       table.integer('city_id').unsigned().references('cities.id')
       table.string('address').nullable()
       table.timestamp('created_at')

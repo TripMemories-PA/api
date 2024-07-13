@@ -18,8 +18,8 @@ export default class Answer extends BaseModel {
   @column()
   declare answer: string
 
-  @column({ serializeAs: null })
-  declare isCorrect: boolean
+  @column()
+  declare isCorrect: boolean | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

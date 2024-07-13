@@ -13,6 +13,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import PoiType from './poi_type.js'
 import Post from './post.js'
 import City from './city.js'
+import Question from './question.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -50,7 +51,7 @@ export default class Poi extends BaseModel {
   declare address: string
 
   @column({ serializeAs: null })
-  declare reference: string
+  declare reference: string | null
 
   @column()
   declare typeId: number
@@ -65,6 +66,11 @@ export default class Poi extends BaseModel {
   })
   declare posts: HasMany<typeof Post>
 
+  @hasMany(() => Question, {
+    foreignKey: 'poiId',
+  })
+  declare questions: HasMany<typeof Question>
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -77,10 +83,16 @@ export default class Poi extends BaseModel {
   @computed()
   declare averageNote: number | null
 
+  @computed()
+  declare questionsCount: number | null
+
   @afterFind()
   static async loadPoiRelations(poi: Poi) {
     const posts = await poi.related('posts').query()
     poi.postsCount = posts.length
+
+    const questions = await poi.related('questions').query()
+    poi.questionsCount = questions.length
 
     const notes = posts.map((post) => Number(post.note))
     if (notes.length === 0) {

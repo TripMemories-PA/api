@@ -26,3 +26,5 @@ yarn-error.log
 
 dataset/*
 !dataset/.gitkeep
+
+google.json

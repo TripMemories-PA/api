@@ -2,6 +2,7 @@ import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
 import { UserTypes } from '../types/models/user_types.js'
+import { randomUUID } from 'node:crypto'
 
 @inject()
 export default class FriendRequestService {
@@ -35,10 +36,20 @@ export default class FriendRequestService {
       .where('id', requestId)
       .firstOrFail()
 
-    await user.related('friends').attach([request.senderId])
-
     const sender = await User.findOrFail(request.senderId)
-    await sender.related('friends').attach([user.id])
+
+    const channel = randomUUID()
+
+    await user.related('friends').attach({
+      [request.senderId]: {
+        channel,
+      },
+    })
+    await sender.related('friends').attach({
+      [userId]: {
+        channel,
+      },
+    })
 
     await request.delete()
   }

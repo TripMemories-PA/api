@@ -21,6 +21,7 @@ import Post from './post.js'
 import UserType from './user_type.js'
 import Poi from './poi.js'
 import UserTicket from './user_ticket.js'
+import Quest from './quest.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'username'],
@@ -111,14 +112,30 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotForeignKey: 'user_id',
     relatedKey: 'id',
     pivotRelatedForeignKey: 'friend_id',
-    serializeAs: null,
+    pivotColumns: ['channel'],
+    pivotTimestamps: true,
   })
   declare friends: ManyToMany<typeof User>
+
+  @manyToMany(() => Quest, {
+    pivotTable: 'quests_users',
+    localKey: 'id',
+    pivotForeignKey: 'user_id',
+    relatedKey: 'id',
+    pivotRelatedForeignKey: 'quest_id',
+    pivotTimestamps: true,
+  })
+  declare quests: ManyToMany<typeof Quest>
 
   @hasMany(() => Post, {
     foreignKey: 'createdById',
   })
   declare posts: HasMany<typeof Post>
+
+  @computed()
+  get hasPaid() {
+    return this.$extras.pivot_has_paid
+  }
 
   @computed()
   declare isFriend: boolean | null
@@ -131,6 +148,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @computed()
   declare poisCount: number | null
+
+  @computed()
+  declare channel: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -159,6 +179,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
         user.isFriend = null
         user.hasSentFriendRequest = null
         user.hasReceivedFriendRequest = null
+        user.channel = null
         return
       }
 
@@ -169,6 +190,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
         .first()
 
       user.isFriend = !!friends
+
+      if (friends) {
+        user.channel = friends.$extras.pivot_channel
+      } else {
+        user.channel = null
+      }
 
       const sentFriendRequest = await user
         .related('sentFriendRequests')
@@ -188,6 +215,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
       user.isFriend = null
       user.hasSentFriendRequest = null
       user.hasReceivedFriendRequest = null
+      user.channel = null
     }
   }
 

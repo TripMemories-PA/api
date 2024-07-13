@@ -4,7 +4,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
 export default class extends BaseSeeder {
   async run() {
-    const defaultPoiId = 3407 // Arc de Triomphe
+    const defaultPoiId = 1775 // Arc de Triomphe
     const countQuestionsWithImage = 10
     const countQuestionsWithoutImage = 10
 
