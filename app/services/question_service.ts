@@ -8,6 +8,7 @@ import AuthService from './auth_service.js'
 import User from '#models/user'
 import { inject } from '@adonisjs/core'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
+import { UserTypes } from '../types/models/user_types.js'
 
 @inject()
 export default class QuestionService {
@@ -17,14 +18,48 @@ export default class QuestionService {
   ) {}
 
   async index(payload: PaginateRequest) {
-    return await Question.query().orderByRaw('RANDOM()').paginate(payload.page, payload.perPage)
+    const questions = await Question.query()
+      .orderByRaw('RANDOM()')
+      .paginate(payload.page, payload.perPage)
+
+    try {
+      const user = this.authService.getAuthenticatedUser()
+
+      if (user.userTypeId === UserTypes.USER) {
+        throw new Error('User is not allowed to see isCorrect field')
+      }
+    } catch (error) {
+      questions.forEach((question) => {
+        question.answers.forEach((answer) => {
+          answer.isCorrect = null
+        })
+      })
+    }
+
+    return questions
   }
 
   async indexPoiQuestions(poiId: number, payload: PaginateRequest) {
-    return await Question.query()
+    const questions = await Question.query()
       .where('poiId', poiId)
       .orderByRaw('RANDOM()')
       .paginate(payload.page, payload.perPage)
+
+    try {
+      const user = this.authService.getAuthenticatedUser()
+
+      if (user.userTypeId === UserTypes.USER) {
+        throw new Error('User is not allowed to see isCorrect field')
+      }
+    } catch (error) {
+      questions.forEach((question) => {
+        question.answers.forEach((answer) => {
+          answer.isCorrect = null
+        })
+      })
+    }
+
+    return questions
   }
 
   async create(payload: CreateQuestionRequest) {
