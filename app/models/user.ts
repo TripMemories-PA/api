@@ -157,7 +157,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare stripeId: string | undefined | null
 
   @computed()
-  declare totalSpent: number | undefined
+  declare totalSpent: string | undefined
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -195,9 +195,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
       if (currentUser.userTypeId === UserTypes.ADMIN) {
         user.stripeId = user.customerId
 
-        const totalSpent = await user.related('tickets').query().where('paid', true).exec()
-        user.totalSpent = totalSpent.reduce((acc, ticket) => acc + ticket.price, 0)
-        user.totalSpent = Number((user.totalSpent / 100).toFixed(2))
+        const tickets = await user.related('tickets').query().where('paid', true).exec()
+        const totalSpent = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
+        user.totalSpent = (totalSpent / 100).toFixed(2)
       }
 
       const friends = await user
