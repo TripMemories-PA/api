@@ -180,16 +180,16 @@ export default class TicketService {
 
     let salesByDate: { [key: string]: { tickets: number; revenue: number } } = {}
 
-    // format sales by date of month
     for (const sale of sales) {
       const date: string = sale.paidAt!.toFormat('MM/yyyy')
 
+      const size = sale.meetId ? 1 : sale.ticket.groupSize
       if (salesByDate[date]) {
-        salesByDate[date].tickets += sale.ticket.groupSize
+        salesByDate[date].tickets += size
         salesByDate[date].revenue += sale.price / 100
       } else {
         salesByDate[date] = {
-          tickets: sale.ticket.groupSize,
+          tickets: size,
           revenue: sale.price / 100,
         }
       }

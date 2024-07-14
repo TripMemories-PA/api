@@ -166,6 +166,13 @@ router
   .prefix('comments')
   .middleware(middleware.auth())
 
+router
+  .group(() => {
+    router.get('', [CommentController, 'index'])
+  })
+  .prefix('comments')
+  .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))
+
 // CITIES
 router
   .group(() => {

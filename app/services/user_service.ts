@@ -34,7 +34,7 @@ export default class UserService {
         if (request.userTypeId) {
           query.where('userTypeId', request.userTypeId)
         } else {
-          query.whereIn('userTypeId', [UserTypes.USER, UserTypes.ADMIN])
+          query.where('userTypeId', UserTypes.USER)
         }
       }
     } catch {}
