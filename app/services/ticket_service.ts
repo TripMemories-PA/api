@@ -9,6 +9,7 @@ import { randomUUID } from 'node:crypto'
 import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
 import { DateTime } from 'luxon'
 import Meet from '#models/meet'
+import { IndexSaleRequest } from '../types/requests/poi/index_sale_request.js'
 
 @inject()
 export default class TicketService {
@@ -169,14 +170,19 @@ export default class TicketService {
     return { valid: true, ticket }
   }
 
-  async indexSales(poiId: number) {
-    const sales = await UserTicket.query()
-      .whereHas('ticket', (query) => {
-        query.where('poiId', poiId)
+  async indexSales(poiId: number, payload: IndexSaleRequest) {
+    const query = UserTicket.query()
+      .whereHas('ticket', (ticket) => {
+        ticket.where('poiId', poiId)
       })
       .where('paid', true)
       .orderBy('paidAt', 'asc')
-      .exec()
+
+    if (payload.startDate && payload.endDate) {
+      query.whereBetween('paidAt', [payload.startDate, payload.endDate])
+    }
+
+    const sales = await query.exec()
 
     let salesByDate: { [key: string]: { tickets: number; revenue: number } } = {}
 

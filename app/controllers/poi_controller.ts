@@ -7,6 +7,7 @@ import QuestionService from '#services/question_service'
 import TicketService from '#services/ticket_service'
 import { indexMeetValidator } from '#validators/meet/index_meet_validator'
 import { indexPoiValidator } from '#validators/poi/index_poi_validator'
+import { indexSaleValidator } from '#validators/poi/index_sale_validator'
 import { storePoiCoverValidator } from '#validators/poi/store_poi_cover_validator'
 import { storePoiValidator } from '#validators/poi/store_poi_validator'
 import { updatePoiValidator } from '#validators/poi/update_poi_validator'
@@ -108,8 +109,9 @@ export default class PoiController {
     return response.ok(quests.toJSON())
   }
 
-  async indexSales({ response, params }: HttpContext) {
-    const sales = await this.ticketService.indexSales(params.id)
+  async indexSales({ response, params, request }: HttpContext) {
+    const payload = await request.validateUsing(indexSaleValidator)
+    const sales = await this.ticketService.indexSales(params.id, payload)
 
     return response.ok(sales)
   }
