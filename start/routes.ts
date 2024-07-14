@@ -129,6 +129,7 @@ router
 router
   .group(() => {
     router.post('', [PoiController, 'store'])
+    router.get('/:id/sales', [PoiController, 'indexSales'])
   })
   .prefix('pois')
   .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))

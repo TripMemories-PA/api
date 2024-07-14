@@ -124,13 +124,16 @@ export default class TicketService {
           .exec()
 
         if (users.length === meet.size) {
-          await UserTicket.query().where('meetId', meet.id).update({ paid: true })
+          await UserTicket.query()
+            .where('meetId', meet.id)
+            .update({ paid: true, paidAt: DateTime.now() })
         }
       } else {
         const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
 
         for (const userTicket of userTickets) {
           userTicket.paid = true
+          userTicket.paidAt = DateTime.now()
           await userTicket.save()
 
           const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
@@ -164,5 +167,34 @@ export default class TicketService {
     await ticket.save()
 
     return { valid: true, ticket }
+  }
+
+  async indexSales(poiId: number) {
+    const sales = await UserTicket.query()
+      .whereHas('ticket', (query) => {
+        query.where('poiId', poiId)
+      })
+      .where('paid', true)
+      .orderBy('paidAt', 'asc')
+      .exec()
+
+    let salesByDate: { [key: string]: { tickets: number; revenue: number } } = {}
+
+    // format sales by date of month
+    for (const sale of sales) {
+      const date: string = sale.paidAt!.toFormat('MM/yyyy')
+
+      if (salesByDate[date]) {
+        salesByDate[date].tickets += sale.ticket.groupSize
+        salesByDate[date].revenue += sale.price / 100
+      } else {
+        salesByDate[date] = {
+          tickets: sale.ticket.groupSize,
+          revenue: sale.price / 100,
+        }
+      }
+    }
+
+    return salesByDate
   }
 }

@@ -21,7 +21,7 @@ export default class PoiController {
   constructor(
     protected poiService: PoiService,
     protected postService: PostService,
-    protected ticketSerivce: TicketService,
+    protected ticketService: TicketService,
     protected questionService: QuestionService,
     protected meetService: MeetService,
     protected fileService: FileService,
@@ -51,7 +51,7 @@ export default class PoiController {
   }
 
   async indexTickets({ response, params }: HttpContext) {
-    const tickets = await this.ticketSerivce.indexPoiTickets(params.id)
+    const tickets = await this.ticketService.indexPoiTickets(params.id)
 
     return response.ok(tickets)
   }
@@ -106,5 +106,11 @@ export default class PoiController {
     const quests = await this.questService.indexPoiQuests(params.id, payload)
 
     return response.ok(quests.toJSON())
+  }
+
+  async indexSales({ response, params }: HttpContext) {
+    const sales = await this.ticketService.indexSales(params.id)
+
+    return response.ok(sales)
   }
 }

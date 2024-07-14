@@ -12,6 +12,9 @@ export default class UserTicket extends BaseModel {
   @column.dateTime()
   declare usedAt: DateTime | null
 
+  @column.dateTime()
+  declare paidAt: DateTime | null
+
   @column()
   declare paid: boolean
 

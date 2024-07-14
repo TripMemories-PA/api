@@ -15,7 +15,7 @@ export default class UserService {
   ) {}
 
   async index(request: IndexUserRequest) {
-    const query = User.query().where('userTypeId', UserTypes.USER)
+    const query = User.query()
 
     if (request.search) {
       query.where((builder) => {
@@ -26,15 +26,23 @@ export default class UserService {
       })
     }
 
+    try {
+      const authUser = this.authService.getAuthenticatedUser()
+      if (authUser.userTypeId === UserTypes.USER) {
+        query.whereNot('id', authUser.id).where('userTypeId', UserTypes.USER)
+      } else if (authUser.userTypeId === UserTypes.ADMIN) {
+        if (request.userTypeId) {
+          query.where('userTypeId', request.userTypeId)
+        } else {
+          query.whereIn('userTypeId', [UserTypes.USER, UserTypes.ADMIN])
+        }
+      }
+    } catch {}
+
     if (request.sortBy && request.order) {
       const order = request.order === 'asc' ? 'asc' : 'desc'
       query.orderBy(request.sortBy, order)
     }
-
-    try {
-      const authUser = this.authService.getAuthenticatedUser()
-      query.whereNot('id', authUser.id)
-    } catch {}
 
     return await query.paginate(request.page, request.perPage)
   }

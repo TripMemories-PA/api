@@ -159,6 +159,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @computed()
   declare totalSpent: string | undefined
 
+  @computed()
+  declare totalEarned: string | undefined
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -173,6 +176,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
       loader.load('avatar')
       loader.load('banner')
       loader.load('userType')
+      loader.load('poi')
     })
 
     const distinctPois = await user.related('posts').query().distinct('poi_id')
@@ -189,45 +193,58 @@ export default class User extends compose(BaseModel, AuthFinder) {
         user.channel = null
         user.stripeId = undefined
         user.totalSpent = undefined
+        user.totalEarned = undefined
         return
       }
 
       if (currentUser.userTypeId === UserTypes.ADMIN) {
-        user.stripeId = user.customerId
-
-        const tickets = await user.related('tickets').query().where('paid', true).exec()
-        const totalSpent = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
-        user.totalSpent = (totalSpent / 100).toFixed(2)
+        if (user.userTypeId === UserTypes.USER) {
+          user.stripeId = user.customerId
+          const tickets = await user.related('tickets').query().where('paid', true).exec()
+          const totalSpent = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
+          user.totalSpent = (totalSpent / 100).toFixed(2)
+        } else if (user.userTypeId === UserTypes.POI) {
+          const tickets = await UserTicket.query()
+            .whereHas('ticket', (query) => {
+              query.where('poiId', user.poiId)
+            })
+            .where('paid', true)
+            .exec()
+          const totalEarned = tickets.reduce((acc, ticket) => acc + ticket.price, 0)
+          user.totalEarned = (totalEarned / 100).toFixed(2)
+        }
       }
 
-      const friends = await user
-        .related('friends')
-        .query()
-        .where('friend_id', currentUser.id)
-        .first()
+      if (user.userTypeId === UserTypes.USER) {
+        const friends = await user
+          .related('friends')
+          .query()
+          .where('friend_id', currentUser.id)
+          .first()
 
-      user.isFriend = !!friends
+        user.isFriend = !!friends
 
-      if (friends) {
-        user.channel = friends.$extras.pivot_channel
-      } else {
-        user.channel = null
+        if (friends) {
+          user.channel = friends.$extras.pivot_channel
+        } else {
+          user.channel = null
+        }
+
+        const sentFriendRequest = await user
+          .related('sentFriendRequests')
+          .query()
+          .where('receiver_id', currentUser.id)
+          .first()
+
+        const receivedFriendRequest = await user
+          .related('receivedFriendRequests')
+          .query()
+          .where('sender_id', currentUser.id)
+          .first()
+
+        user.hasSentFriendRequest = !!sentFriendRequest
+        user.hasReceivedFriendRequest = !!receivedFriendRequest
       }
-
-      const sentFriendRequest = await user
-        .related('sentFriendRequests')
-        .query()
-        .where('receiver_id', currentUser.id)
-        .first()
-
-      const receivedFriendRequest = await user
-        .related('receivedFriendRequests')
-        .query()
-        .where('sender_id', currentUser.id)
-        .first()
-
-      user.hasSentFriendRequest = !!sentFriendRequest
-      user.hasReceivedFriendRequest = !!receivedFriendRequest
     } catch {
       user.isFriend = null
       user.hasSentFriendRequest = null
@@ -235,6 +252,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
       user.channel = null
       user.stripeId = undefined
       user.totalSpent = undefined
+      user.totalEarned = undefined
     }
   }
 
