@@ -31,7 +31,11 @@ export const storeMeetValidator = vine.compile(
           return true
         }
 
-        const ticket = await Ticket.query().where('id', value).where('quantity', '>', 0).first()
+        const ticket = await Ticket.query()
+          .where('id', value)
+          .where('quantity', '>', 0)
+          .where('groupSize', '>', 1)
+          .first()
 
         if (!ticket || ticket.poiId !== field.parent.poiId) {
           return false

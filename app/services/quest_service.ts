@@ -7,6 +7,7 @@ import AuthService from './auth_service.js'
 import UploadFile from '#models/upload_file'
 import GoogleVisionService from './google_vision_service.js'
 import { Exception } from '@adonisjs/core/exceptions'
+import Poi from '#models/poi'
 
 @inject()
 export default class QuestService {
@@ -36,8 +37,10 @@ export default class QuestService {
     return quest
   }
 
-  async index(payload: PaginateRequest) {
-    return Quest.query().paginate(payload.page, payload.perPage)
+  async indexPoiQuests(id: number, payload: PaginateRequest) {
+    const poi = await Poi.query().where('id', id).firstOrFail()
+
+    return await poi.related('quests').query().paginate(payload.page, payload.perPage)
   }
 
   async show(id: number) {
