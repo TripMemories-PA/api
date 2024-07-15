@@ -40,7 +40,11 @@ export default class QuestService {
   async indexPoiQuests(id: number, payload: PaginateRequest) {
     const poi = await Poi.query().where('id', id).firstOrFail()
 
-    return await poi.related('quests').query().paginate(payload.page, payload.perPage)
+    return await poi
+      .related('quests')
+      .query()
+      .orderBy('createdAt', 'desc')
+      .paginate(payload.page, payload.perPage)
   }
 
   async show(id: number) {
