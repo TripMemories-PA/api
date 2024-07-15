@@ -4,7 +4,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 export default class extends BaseSeeder {
   async run() {
     const countQuests = 10
-    const defaultPoiId = 1775
+    const defaultPoiId = 868 // Louvre
 
     await QuestFactory.merge({
       poiId: defaultPoiId,

@@ -56,7 +56,7 @@ export default class MeetService {
     return await Meet.query()
       .where('poiId', poiId)
       .where('date', '>', dayjs().format('YYYY-MM-DD HH:mm:ss'))
-      .orderBy('date', 'asc')
+      .orderBy('date', 'desc')
       .paginate(payload.page, payload.perPage)
   }
 
@@ -65,7 +65,7 @@ export default class MeetService {
       .whereHas('users', (builder) => {
         builder.where('user_id', userId).where('is_banned', false)
       })
-      .orderBy('date', 'asc')
+      .orderBy('date', 'desc')
       .paginate(payload.page, payload.perPage)
   }
 

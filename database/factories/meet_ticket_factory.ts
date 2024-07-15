@@ -5,7 +5,7 @@ import Ticket from '#models/ticket'
 
 export const MeetTicketFactory = factory
   .define(Meet, async ({ faker }) => {
-    const ticket = await Ticket.query().orderByRaw('RANDOM()').first()
+    const ticket = await Ticket.query().orderByRaw('RANDOM()').where('groupSize', '>', 1).first()
 
     return {
       title: faker.lorem.sentence(),
@@ -13,7 +13,7 @@ export const MeetTicketFactory = factory
       size: ticket!.groupSize,
       date: DateTime.fromJSDate(faker.date.soon({ days: 7 })),
       createdById: faker.number.int(),
-      poiId: faker.number.int(),
+      poiId: ticket!.poiId,
       ticketId: ticket!.id,
       price: ticket!.price,
       channel: faker.string.uuid(),
