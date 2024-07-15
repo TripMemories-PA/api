@@ -15,7 +15,7 @@ export default class extends BaseSeeder {
     const countPosts = 3
     const countComments = 3
     const defaultPassword = 'Test1234!'
-    const defaultPoiId = 1775 // Arc de Triomphe
+    const defaultPoiId = 868 // Louvre
 
     for (let i = 1; i <= countUser; i++) {
       const channels: any = []
