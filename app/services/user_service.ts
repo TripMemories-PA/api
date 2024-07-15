@@ -6,6 +6,9 @@ import AuthService from './auth_service.js'
 import FileService from './file_service.js'
 import { inject } from '@adonisjs/core'
 import { UserTypes } from '../types/models/user_types.js'
+import { CreateUserRequest } from '../types/requests/user/create_user_request.js'
+import { randomUUID } from 'node:crypto'
+import hash from '@adonisjs/core/services/hash'
 
 @inject()
 export default class UserService {
@@ -42,6 +45,8 @@ export default class UserService {
     if (request.sortBy && request.order) {
       const order = request.order === 'asc' ? 'asc' : 'desc'
       query.orderBy(request.sortBy, order)
+    } else {
+      query.orderBy('id', 'desc')
     }
 
     return await query.paginate(request.page, request.perPage)
@@ -104,5 +109,25 @@ export default class UserService {
     }
 
     await user.delete()
+  }
+
+  async create(payload: CreateUserRequest) {
+    return await User.create({
+      username: randomUUID(),
+      email: payload.email,
+      password: payload.password,
+      userTypeId: UserTypes.POI,
+      poiId: payload.poiId,
+      firstname: '',
+      lastname: '',
+    })
+  }
+
+  async updatePassword(userId: number, password: string) {
+    const user = await User.findOrFail(userId)
+
+    user.password = password
+
+    return await user.save()
   }
 }

@@ -2,6 +2,7 @@ import MeetService from '#services/meet_service'
 import PostService from '#services/post_service'
 import TicketService from '#services/ticket_service'
 import UserService from '#services/user_service'
+import { passwordValidator } from '#validators/auth/password_validator'
 import { indexMeetValidator } from '#validators/meet/index_meet_validator'
 import { indexPostValidator } from '#validators/post/index_post_validator'
 import { storeAvatarValidator } from '#validators/user/store_avatar_validator'
@@ -33,6 +34,14 @@ export default class MeController {
     const user = await this.userService.update(auth.user!.id, payload)
 
     return response.ok(user.toJSON())
+  }
+
+  async updatePassword({ request, response, auth }: HttpContext) {
+    const { password } = await request.validateUsing(passwordValidator)
+
+    await this.userService.updatePassword(auth.user!.id, password)
+
+    return response.noContent()
   }
 
   async storeAvatar({ request, response, auth }: HttpContext) {

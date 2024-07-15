@@ -176,7 +176,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
       loader.load('avatar')
       loader.load('banner')
       loader.load('userType')
-      loader.load('poi')
+      loader.load('poi', (poi) => {
+        poi.preload('city')
+      })
     })
 
     const distinctPois = await user.related('posts').query().distinct('poi_id')
