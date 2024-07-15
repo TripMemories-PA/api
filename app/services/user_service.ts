@@ -20,14 +20,7 @@ export default class UserService {
   async index(request: IndexUserRequest) {
     const query = User.query()
 
-    if (request.search) {
-      query.where((builder) => {
-        builder
-          .where('username', 'ilike', `%${request.search}%`)
-          .orWhereRaw("concat(firstname, ' ', lastname) ilike ?", [`%${request.search}%`])
-          .orWhereRaw("concat(lastname, ' ', firstname) ilike ?", [`%${request.search}%`])
-      })
-    }
+    let searchPoi = false
 
     try {
       const authUser = this.authService.getAuthenticatedUser()
@@ -36,11 +29,32 @@ export default class UserService {
       } else if (authUser.userTypeId === UserTypes.ADMIN) {
         if (request.userTypeId) {
           query.where('userTypeId', request.userTypeId)
+
+          if (request.userTypeId === UserTypes.POI) {
+            searchPoi = true
+          }
         } else {
           query.where('userTypeId', UserTypes.USER)
         }
       }
     } catch {}
+
+    if (request.search) {
+      if (searchPoi) {
+        query.where((builder) => {
+          builder.whereHas('poi', (poiQuery) => {
+            poiQuery.where('name', 'ilike', `%${request.search}%`)
+          })
+        })
+      } else {
+        query.where((builder) => {
+          builder
+            .where('username', 'ilike', `%${request.search}%`)
+            .orWhereRaw("concat(firstname, ' ', lastname) ilike ?", [`%${request.search}%`])
+            .orWhereRaw("concat(lastname, ' ', firstname) ilike ?", [`%${request.search}%`])
+        })
+      }
+    }
 
     if (request.sortBy && request.order) {
       const order = request.order === 'asc' ? 'asc' : 'desc'
