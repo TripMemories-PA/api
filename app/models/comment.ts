@@ -12,6 +12,7 @@ import User from './user.js'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import CommentLike from './comment_like.js'
 import { HttpContext } from '@adonisjs/core/http'
+import Report from './report.js'
 
 export default class Comment extends BaseModel {
   @column({ isPrimary: true })
@@ -36,6 +37,11 @@ export default class Comment extends BaseModel {
   })
   declare likes: HasMany<typeof CommentLike>
 
+  @hasMany(() => Report, {
+    foreignKey: 'commentId',
+  })
+  declare reports: HasMany<typeof Report>
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -46,19 +52,30 @@ export default class Comment extends BaseModel {
   declare likesCount: number | null
 
   @computed()
+  declare reportsCount: number | null
+
+  @computed()
   declare isLiked: boolean | null
+
+  @computed()
+  declare isReported: boolean | null
 
   @afterFind()
   static async loadCommentRelations(comment: Comment) {
     const likes = await comment.related('likes').query()
     comment.likesCount = likes.length
 
+    const reports = await comment.related('reports').query()
+    comment.reportsCount = reports.length
+
     try {
       const httpContext = HttpContext.getOrFail()
       const userId = httpContext.auth.user?.id
       comment.isLiked = likes.some((like) => like.userId === userId)
+      comment.isReported = reports.some((report) => report.userId === userId)
     } catch {
       comment.isLiked = null
+      comment.isReported = null
     }
 
     await comment.load((loader) => {
