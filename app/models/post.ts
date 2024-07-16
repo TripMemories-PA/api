@@ -14,6 +14,7 @@ import Poi from './poi.js'
 import Comment from './comment.js'
 import PostLike from './post_like.js'
 import { HttpContext } from '@adonisjs/core/http'
+import Report from './report.js'
 
 export default class Post extends BaseModel {
   @column({ isPrimary: true })
@@ -60,6 +61,11 @@ export default class Post extends BaseModel {
   })
   declare comments: HasMany<typeof Comment>
 
+  @hasMany(() => Report, {
+    foreignKey: 'postId',
+  })
+  declare reports: HasMany<typeof Report>
+
   @hasMany(() => PostLike, {
     foreignKey: 'postId',
   })
@@ -80,7 +86,13 @@ export default class Post extends BaseModel {
   declare isLiked: boolean | null
 
   @column()
+  declare isReported: boolean | null
+
+  @column()
   declare likesCount: number | null
+
+  @column()
+  declare reportsCount: number | null
 
   @column()
   declare commentsCount: number | null
@@ -93,12 +105,17 @@ export default class Post extends BaseModel {
     const comments = await post.related('comments').query()
     post.commentsCount = comments.length
 
+    const reports = await post.related('reports').query()
+    post.reportsCount = reports.length
+
     try {
       const httpContext = HttpContext.getOrFail()
       const userId = httpContext.auth.user?.id
       post.isLiked = likes.some((like) => like.userId === userId)
+      post.isReported = reports.some((report) => report.userId === userId)
     } catch {
       post.isLiked = null
+      post.isReported = null
     }
 
     await post.load((loader) => {
