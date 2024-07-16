@@ -51,6 +51,7 @@ router
   .group(() => {
     router.get('', [MeController, 'show'])
     router.put('', [MeController, 'update'])
+    router.put('/password', [MeController, 'updatePassword'])
     router.delete('', [MeController, 'delete'])
     router.post('/avatar', [MeController, 'storeAvatar'])
     router.post('/banner', [MeController, 'storeBanner'])
@@ -103,6 +104,15 @@ router
   .prefix('users')
   .middleware(middleware.auth())
 
+router
+  .group(() => {
+    router.post('', [UserController, 'create'])
+    router.put('/:id', [UserController, 'update'])
+    router.put('/:id/password', [UserController, 'updatePassword'])
+  })
+  .prefix('users')
+  .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))
+
 // POIS
 router
   .group(() => {
@@ -129,6 +139,7 @@ router
 router
   .group(() => {
     router.post('', [PoiController, 'store'])
+    router.get('/:id/sales', [PoiController, 'indexSales'])
   })
   .prefix('pois')
   .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))
@@ -164,6 +175,13 @@ router
   })
   .prefix('comments')
   .middleware(middleware.auth())
+
+router
+  .group(() => {
+    router.get('', [CommentController, 'index'])
+  })
+  .prefix('comments')
+  .middleware(middleware.auth({ userTypes: [UserTypes.ADMIN] }))
 
 // CITIES
 router

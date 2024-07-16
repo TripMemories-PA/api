@@ -1,5 +1,6 @@
 import CommentService from '#services/comment_service'
 import LikeService from '#services/like_service'
+import { indexCommentValidator } from '#validators/comment/index_comment_validator'
 import { storeCommentValidator } from '#validators/comment/store_comment_validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
@@ -36,5 +37,13 @@ export default class CommentController {
     await this.likeService.unlikeComment(auth.user!.id, params.id)
 
     return response.noContent()
+  }
+
+  async index({ response, request }: HttpContext) {
+    const payload = await request.validateUsing(indexCommentValidator)
+
+    const comments = await this.commentService.index(payload)
+
+    return response.ok(comments.toJSON())
   }
 }

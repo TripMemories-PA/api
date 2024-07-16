@@ -9,6 +9,7 @@ import { randomUUID } from 'node:crypto'
 import { BuyTicketRequest } from '../types/requests/ticket/buy_ticket_request.js'
 import { DateTime } from 'luxon'
 import Meet from '#models/meet'
+import { IndexSaleRequest } from '../types/requests/poi/index_sale_request.js'
 
 @inject()
 export default class TicketService {
@@ -124,13 +125,16 @@ export default class TicketService {
           .exec()
 
         if (users.length === meet.size) {
-          await UserTicket.query().where('meetId', meet.id).update({ paid: true })
+          await UserTicket.query()
+            .where('meetId', meet.id)
+            .update({ paid: true, paidAt: DateTime.now() })
         }
       } else {
         const userTickets = await UserTicket.query().where('piId', paymentIntent.id).exec()
 
         for (const userTicket of userTickets) {
           userTicket.paid = true
+          userTicket.paidAt = DateTime.now()
           await userTicket.save()
 
           const ticket = await Ticket.query().where('id', userTicket.ticketId).firstOrFail()
@@ -164,5 +168,39 @@ export default class TicketService {
     await ticket.save()
 
     return { valid: true, ticket }
+  }
+
+  async indexSales(poiId: number, payload: IndexSaleRequest) {
+    const query = UserTicket.query()
+      .whereHas('ticket', (ticket) => {
+        ticket.where('poiId', poiId)
+      })
+      .where('paid', true)
+      .orderBy('paidAt', 'asc')
+
+    if (payload.startDate && payload.endDate) {
+      query.whereBetween('paidAt', [payload.startDate, payload.endDate])
+    }
+
+    const sales = await query.exec()
+
+    let salesByDate: { [key: string]: { tickets: number; revenue: number } } = {}
+
+    for (const sale of sales) {
+      const date: string = sale.paidAt!.toFormat('MM/yyyy')
+
+      const size = sale.meetId ? 1 : sale.ticket.groupSize
+      if (salesByDate[date]) {
+        salesByDate[date].tickets += size
+        salesByDate[date].revenue += sale.price / 100
+      } else {
+        salesByDate[date] = {
+          tickets: size,
+          revenue: sale.price / 100,
+        }
+      }
+    }
+
+    return salesByDate
   }
 }
