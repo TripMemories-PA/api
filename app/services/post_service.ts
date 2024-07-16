@@ -88,7 +88,7 @@ export default class PostService {
 
     const post = await Post.query().where('id', id).firstOrFail()
 
-    if (post.createdById !== authUser.id) {
+    if (post.createdById !== authUser.id && authUser.userTypeId !== UserTypes.ADMIN) {
       throw new Exception('You are not authorized to delete this post', { status: 403 })
     }
 

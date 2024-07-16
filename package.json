@@ -10,6 +10,7 @@
     "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
+    "import": "curl -X POST -H \"Content-Type:application/x-turtle\" --data-binary @dataset/flux.ttl \"http://localhost:9999/blazegraph/namespace/kb/sparql\"",
     "pm2:dev": "pm2 start \"npm run dev\" --name api_dev",
     "pm2:prod": "pm2 start \"npm run dev\" --name api_prod",
     "migrate:fresh": "node ace migration:fresh --seed",
