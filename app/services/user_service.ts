@@ -8,7 +8,6 @@ import { inject } from '@adonisjs/core'
 import { UserTypes } from '../types/models/user_types.js'
 import { CreateUserRequest } from '../types/requests/user/create_user_request.js'
 import { randomUUID } from 'node:crypto'
-import hash from '@adonisjs/core/services/hash'
 
 @inject()
 export default class UserService {
