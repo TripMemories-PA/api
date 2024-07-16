@@ -15,6 +15,9 @@ import Post from './post.js'
 import City from './city.js'
 import Question from './question.js'
 import Quest from './quest.js'
+import { HttpContext } from '@adonisjs/core/http'
+import { UserTypes } from '../types/models/user_types.js'
+import User from './user.js'
 
 export default class Poi extends BaseModel {
   @column({ isPrimary: true })
@@ -92,6 +95,9 @@ export default class Poi extends BaseModel {
   @computed()
   declare questionsCount: number | null
 
+  @computed()
+  declare isManaged: boolean | undefined
+
   @afterFind()
   static async loadPoiRelations(poi: Poi) {
     const posts = await poi.related('posts').query()
@@ -106,6 +112,18 @@ export default class Poi extends BaseModel {
     } else {
       const averageNote = notes.reduce((acc, note) => acc + note, 0) / notes.length
       poi.averageNote = Math.round(averageNote * 10) / 10
+    }
+
+    try {
+      const ctx = HttpContext.getOrFail()
+      const currentUser = ctx.auth.user
+      if (currentUser?.userTypeId === UserTypes.ADMIN) {
+        const manager = await User.query().where('poiId', poi.id).first()
+
+        poi.isManaged = !!manager
+      }
+    } catch {
+      poi.isManaged = undefined
     }
 
     await poi.load((loader) => {
