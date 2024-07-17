@@ -36,7 +36,9 @@ export default class UserService {
           query.where('userTypeId', UserTypes.USER)
         }
       }
-    } catch {}
+    } catch {
+      query.where('userTypeId', UserTypes.USER)
+    }
 
     if (request.search) {
       if (searchPoi) {
