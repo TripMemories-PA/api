@@ -6,6 +6,8 @@ import AuthService from './auth_service.js'
 import { Exception } from '@adonisjs/core/exceptions'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
 import { UserTypes } from '../types/models/user_types.js'
+import { Database } from '@adonisjs/lucid/database'
+import db from '@adonisjs/lucid/services/db'
 
 @inject()
 export default class CommentService {
@@ -39,7 +41,11 @@ export default class CommentService {
 
   async index(payload: PaginateRequest) {
     return await Comment.query()
-      .orderBy('created_at', 'desc')
+      .select('comments.*')
+      .count('reports.id as reports_count')
+      .leftJoin('reports', 'comments.id', 'reports.comment_id')
+      .groupBy('comments.id')
+      .orderBy('reports_count', 'desc')
       .paginate(payload.page, payload.perPage)
   }
 }
