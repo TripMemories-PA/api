@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "docker": "docker compose -p api up -d",
-    "start": "node bin/server.js",
+    "start": "node ace build && cp .env build && cp google.json build && node build/bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
