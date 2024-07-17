@@ -12,7 +12,7 @@
     "test": "node ace test",
     "import": "curl -X POST -H \"Content-Type:application/x-turtle\" --data-binary @dataset/flux.ttl \"http://localhost:9999/blazegraph/namespace/kb/sparql\"",
     "pm2:dev": "pm2 start \"npm run dev\" --name api_dev",
-    "pm2:prod": "pm2 start \"npm run dev\" --name api_prod",
+    "pm2:prod": "pm2 start \"npm run start\" --name api_prod",
     "migrate:fresh": "node ace migration:fresh --seed",
     "lint": "eslint . --ignore-pattern docker/",
     "lint:fix": "eslint . --ignore-pattern docker/ --fix",
