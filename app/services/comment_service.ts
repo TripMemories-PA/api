@@ -6,8 +6,6 @@ import AuthService from './auth_service.js'
 import { Exception } from '@adonisjs/core/exceptions'
 import { PaginateRequest } from '../types/requests/paginate_request.js'
 import { UserTypes } from '../types/models/user_types.js'
-import { Database } from '@adonisjs/lucid/database'
-import db from '@adonisjs/lucid/services/db'
 
 @inject()
 export default class CommentService {
