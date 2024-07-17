@@ -1,5 +1,6 @@
 import CommentService from '#services/comment_service'
 import LikeService from '#services/like_service'
+import ReportService from '#services/report_service'
 import { indexCommentValidator } from '#validators/comment/index_comment_validator'
 import { storeCommentValidator } from '#validators/comment/store_comment_validator'
 import { inject } from '@adonisjs/core'
@@ -9,7 +10,8 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class CommentController {
   constructor(
     protected commentService: CommentService,
-    protected likeService: LikeService
+    protected likeService: LikeService,
+    protected reportService: ReportService
   ) {}
 
   async store({ request, response, auth }: HttpContext) {
@@ -45,5 +47,11 @@ export default class CommentController {
     const comments = await this.commentService.index(payload)
 
     return response.ok(comments.toJSON())
+  }
+
+  async report({ response, params }: HttpContext) {
+    await this.reportService.reportComment(params.id)
+
+    return response.noContent()
   }
 }

@@ -40,10 +40,19 @@ export default class QuestionService {
   }
 
   async indexPoiQuestions(poiId: number, payload: PaginateRequest) {
-    const questions = await Question.query()
-      .where('poiId', poiId)
-      .orderByRaw('RANDOM()')
-      .paginate(payload.page, payload.perPage)
+    const query = Question.query().where('poiId', poiId)
+
+    try {
+      const user = this.authService.getAuthenticatedUser()
+
+      if (user.userTypeId === UserTypes.USER) {
+        query.orderByRaw('RANDOM()')
+      }
+    } catch {
+      query.orderByRaw('RANDOM()')
+    }
+
+    const questions = await query.paginate(payload.page, payload.perPage)
 
     try {
       const user = this.authService.getAuthenticatedUser()

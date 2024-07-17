@@ -34,7 +34,11 @@ export default class TicketService {
   }
 
   async indexPoiTickets(poiId: number) {
-    return await Ticket.query().where('poiId', poiId).where('available', true).exec()
+    return await Ticket.query()
+      .where('poiId', poiId)
+      .where('available', true)
+      .orderBy('groupSize', 'asc')
+      .exec()
   }
 
   async delete(id: number) {
@@ -146,7 +150,11 @@ export default class TicketService {
   }
 
   async indexUserTickets(userId: number) {
-    return await UserTicket.query().where('userId', userId).where('paid', true).exec()
+    return await UserTicket.query()
+      .where('userId', userId)
+      .where('paid', true)
+      .orderBy('createdAt', 'desc')
+      .exec()
   }
 
   async validate(qrCode: string, poiId: number) {

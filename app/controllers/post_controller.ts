@@ -2,6 +2,7 @@ import CommentService from '#services/comment_service'
 import FileService from '#services/file_service'
 import LikeService from '#services/like_service'
 import PostService from '#services/post_service'
+import ReportService from '#services/report_service'
 import { indexCommentValidator } from '#validators/comment/index_comment_validator'
 import { createPostImageValidator } from '#validators/post/create_post_image_validator'
 import { createPostValidator } from '#validators/post/create_post_validator'
@@ -15,7 +16,8 @@ export default class PostController {
     protected postService: PostService,
     protected fileService: FileService,
     protected commentService: CommentService,
-    protected likeService: LikeService
+    protected likeService: LikeService,
+    protected reportService: ReportService
   ) {}
 
   async show({ response, params }: HttpContext) {
@@ -71,6 +73,12 @@ export default class PostController {
 
   async unlike({ response, auth, params }: HttpContext) {
     await this.likeService.unlikePost(auth.user!.id, params.id)
+
+    return response.noContent()
+  }
+
+  async report({ response, params }: HttpContext) {
+    await this.reportService.reportPost(params.id)
 
     return response.noContent()
   }
