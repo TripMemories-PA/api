@@ -39,7 +39,11 @@ export default class CommentService {
 
   async index(payload: PaginateRequest) {
     return await Comment.query()
-      .orderBy('created_at', 'desc')
+      .select('comments.*')
+      .count('reports.id as reports_count')
+      .leftJoin('reports', 'comments.id', 'reports.comment_id')
+      .groupBy('comments.id')
+      .orderBy('reports_count', 'desc')
       .paginate(payload.page, payload.perPage)
   }
 }

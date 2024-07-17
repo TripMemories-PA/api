@@ -65,6 +65,20 @@ export default class PostService {
   }
 
   async index(payload: IndexPostRequest) {
+    try {
+      const user = this.authService.getAuthenticatedUser()
+
+      if (user.userTypeId === UserTypes.ADMIN) {
+        return await Post.query()
+          .select('posts.*')
+          .count('reports.id as reports_count')
+          .leftJoin('reports', 'posts.id', 'reports.post_id')
+          .groupBy('posts.id')
+          .orderBy('reports_count', 'desc')
+          .paginate(payload.page, payload.perPage)
+      }
+    } catch {}
+
     return await Post.query().orderBy('created_at', 'desc').paginate(payload.page, payload.perPage)
   }
 
